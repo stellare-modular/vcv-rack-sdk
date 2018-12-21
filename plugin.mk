@@ -6,6 +6,8 @@ ifndef SLUG
 $(error SLUG is not defined)
 endif
 
+STRIP ?= strip
+
 FLAGS += -DSLUG=$(SLUG)
 FLAGS += -fPIC
 FLAGS += -I$(RACK_DIR)/include -I$(RACK_DIR)/dep/include
@@ -13,19 +15,22 @@ FLAGS += -I$(RACK_DIR)/include -I$(RACK_DIR)/dep/include
 
 include $(RACK_DIR)/arch.mk
 
-ifeq ($(ARCH), lin)
+ifdef ARCH_LIN
 	LDFLAGS += -shared
 	TARGET := plugin.so
+	RACK_USER_DIR ?= $(HOME)/.Rack
 endif
 
-ifeq ($(ARCH), mac)
+ifdef ARCH_MAC
 	LDFLAGS += -shared -undefined dynamic_lookup
 	TARGET := plugin.dylib
+	RACK_USER_DIR ?= $(HOME)/Documents/Rack
 endif
 
-ifeq ($(ARCH), win)
+ifdef ARCH_WIN
 	LDFLAGS += -shared -L$(RACK_DIR) -lRack
 	TARGET := plugin.dll
+	RACK_USER_DIR ?= $(USERPROFILE)/Documents/Rack
 endif
 
 
@@ -43,18 +48,20 @@ clean:
 dist: all
 	rm -rf dist
 	mkdir -p dist/$(SLUG)
-	# Strip and copy plugin binary
+	@# Strip and copy plugin binary
 	cp $(TARGET) dist/$(SLUG)/
-ifeq ($(ARCH), mac)
-	strip -x dist/$(SLUG)/$(TARGET)
+ifdef ARCH_MAC
+	$(STRIP) -S dist/$(SLUG)/$(TARGET)
 else
-	strip -s dist/$(SLUG)/$(TARGET)
+	$(STRIP) -s dist/$(SLUG)/$(TARGET)
 endif
-	# Copy distributables
+	@# Copy distributables
 	cp -R $(DISTRIBUTABLES) dist/$(SLUG)/
-	# Create ZIP package
+	@# Create ZIP package
 	cd dist && zip -5 -r $(SLUG)-$(VERSION)-$(ARCH).zip $(SLUG)
 
+install: dist
+	cp dist/$(SLUG)-$(VERSION)-$(ARCH).zip $(RACK_USER_DIR)/plugins/
 
 .PHONY: clean dist
 .DEFAULT_GOAL := all

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <cmath>
+#include "util/math.hpp"
 
 
 namespace rack {
 
 
+/** The normalized sinc function. https://en.wikipedia.org/wiki/Sinc_function */
 inline float sinc(float x) {
 	if (x == 0.f)
 		return 1.f;
@@ -40,6 +41,14 @@ inline float sqrtBipolar(float x) {
 inline float exponentialBipolar(float b, float x) {
 	const float a = b - 1.f / b;
 	return (powf(b, x) - powf(b, -x)) / a;
+}
+
+inline float gainToDb(float gain) {
+	return log10f(gain) * 20.f;
+}
+
+inline float dbToGain(float db) {
+	return powf(10.f, db / 20.f);
 }
 
 

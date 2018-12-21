@@ -18,6 +18,16 @@ namespace rack {
 // basic integer functions
 ////////////////////
 
+/** Returns true if x is odd */
+inline bool isOdd(int x) {
+	return x % 2 != 0;
+}
+
+/** Returns true if x is odd */
+inline bool isEven(int x) {
+	return x % 2 == 0;
+}
+
 /** Returns the minimum of `a` and `b` */
 inline int min(int a, int b) {
 	return (a < b) ? a : b;
@@ -143,9 +153,10 @@ inline void cmult(float *cr, float *ci, float ar, float ai, float br, float bi) 
 struct Rect;
 
 struct Vec {
-	float x, y;
+	float x = 0.f;
+	float y = 0.f;
 
-	Vec() : x(0.0f), y(0.0f) {}
+	Vec() {}
 	Vec(float x, float y) : x(x), y(y) {}
 
 	Vec neg() {
@@ -174,6 +185,9 @@ struct Vec {
 	}
 	float norm() {
 		return hypotf(x, y);
+	}
+	Vec flip() {
+		return Vec(y, x);
 	}
 	Vec min(Vec b) {
 		return Vec(rack::min(x, b.x), rack::min(y, b.y));
@@ -281,6 +295,12 @@ struct Rect {
 		Rect r;
 		r.pos = pos.minus(delta);
 		r.size = size.plus(delta.mult(2.f));
+		return r;
+	}
+	Rect shrink(Vec delta) {
+		Rect r;
+		r.pos = pos.plus(delta);
+		r.size = size.minus(delta.mult(2.f));
 		return r;
 	}
 };

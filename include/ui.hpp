@@ -74,7 +74,7 @@ struct Menu : OpaqueWidget {
 	}
 	~Menu();
 	/** Deprecated. Just use addChild(child) instead */
-	void pushChild(Widget *child) DEPRECATED {
+	DEPRECATED void pushChild(Widget *child) {
 		addChild(child);
 	}
 	void setChildMenu(Menu *menu);
@@ -92,6 +92,11 @@ struct MenuEntry : OpaqueWidget {
 		T *o = Widget::create<T>(Vec());
 		return o;
 	}
+};
+
+struct MenuSeparator : MenuEntry {
+	MenuSeparator();
+	void draw(NVGcontext *vg) override;
 };
 
 struct MenuLabel : MenuEntry {
@@ -125,6 +130,9 @@ struct MenuItem : MenuEntry {
 	}
 };
 
+struct TooltipOverlay : TransparentWidget {
+};
+
 struct WindowOverlay : OpaqueWidget {
 };
 
@@ -147,6 +155,13 @@ struct Button : OpaqueWidget {
 	void onDragStart(EventDragStart &e) override;
 	void onDragEnd(EventDragEnd &e) override;
 	void onDragDrop(EventDragDrop &e) override;
+};
+
+struct IconButton : Button {
+	FramebufferWidget *fw;
+	SVGWidget *sw;
+	IconButton();
+	void setSVG(std::shared_ptr<SVG> svg);
 };
 
 struct ChoiceButton : Button {
@@ -235,12 +250,14 @@ struct ProgressBar : QuantityWidget {
 };
 
 struct Tooltip : VirtualWidget {
-	void step() override;
+	std::string text;
+	Tooltip();
 	void draw(NVGcontext *vg) override;
 };
 
 struct Scene : OpaqueWidget {
 	Widget *overlay = NULL;
+	/** Takes ownership of `w` */
 	void setOverlay(Widget *w);
 	Menu *createMenu();
 	void step() override;

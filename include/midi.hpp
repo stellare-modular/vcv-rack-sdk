@@ -1,15 +1,10 @@
 #pragma once
 
 #include "util/common.hpp"
-#include <queue>
 #include <vector>
+#include <queue>
+#include <set>
 #include <jansson.h>
-
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#include "rtmidi/RtMidi.h"
-#pragma GCC diagnostic pop
 
 
 namespace rack {
@@ -34,28 +29,71 @@ struct MidiMessage {
 	}
 };
 
+////////////////////
+// MidiDevice
+////////////////////
+
+struct MidiDevice {
+	virtual ~MidiDevice() {}
+};
+
+struct MidiInput;
+
+struct MidiInputDevice : MidiDevice {
+	std::set<MidiInput*> subscribed;
+	void subscribe(MidiInput *midiInput);
+	void unsubscribe(MidiInput *midiInput);
+	void onMessage(MidiMessage message);
+};
+
+struct MidiOutputDevice : MidiDevice {
+	// TODO
+};
+
+////////////////////
+// MidiDriver
+////////////////////
+
+struct MidiDriver {
+	virtual ~MidiDriver() {}
+	virtual std::string getName() {return "";}
+
+	virtual std::vector<int> getInputDeviceIds() {return {};}
+	virtual std::string getInputDeviceName(int deviceId) {return "";}
+	virtual MidiInputDevice *subscribeInputDevice(int deviceId, MidiInput *midiInput) {return NULL;}
+	virtual void unsubscribeInputDevice(int deviceId, MidiInput *midiInput) {}
+
+	// virtual std::vector<int> getOutputDeviceIds() = 0;
+	// virtual std::string getOutputDeviceName(int deviceId) = 0;
+	// virtual MidiOutputDevice *subscribeOutputDevice(int deviceId, MidiOutput *midiOutput) = 0;
+	// virtual void unsubscribeOutputDevice(int deviceId, MidiOutput *midiOutput) = 0;
+};
+
+////////////////////
+// MidiIO
+////////////////////
 
 struct MidiIO {
-	int driver = -1;
-	int device = -1;
+	int driverId = -1;
+	int deviceId = -1;
 	/* For MIDI output, the channel to output messages.
 	For MIDI input, the channel to filter.
 	Set to -1 to allow all MIDI channels (for input).
 	Zero indexed.
 	*/
 	int channel = -1;
-	RtMidi *rtMidi = NULL;
-	/** Cached */
-	std::string deviceName;
+	/** Not owned */
+	MidiDriver *driver = NULL;
 
-	virtual ~MidiIO() {}
-	std::vector<int> getDrivers();
-	std::string getDriverName(int driver);
-	virtual void setDriver(int driver) {}
+	virtual ~MidiIO();
 
-	int getDeviceCount();
-	std::string getDeviceName(int device);
-	virtual void setDevice(int device) {}
+	std::vector<int> getDriverIds();
+	std::string getDriverName(int driverId);
+	void setDriverId(int driverId);
+
+	virtual std::vector<int> getDeviceIds() = 0;
+	virtual std::string getDeviceName(int deviceId) = 0;
+	virtual void setDeviceId(int deviceId) = 0;
 
 	std::string getChannelName(int channel);
 	json_t *toJson();
@@ -64,17 +102,18 @@ struct MidiIO {
 
 
 struct MidiInput : MidiIO {
-	RtMidiIn *rtMidiIn = NULL;
 	MidiInput();
 	~MidiInput();
-	void setDriver(int driver) override;
-	void setDevice(int device) override;
+
+	std::vector<int> getDeviceIds() override;
+	std::string getDeviceName(int deviceId) override;
+	void setDeviceId(int deviceId) override;
 	virtual void onMessage(MidiMessage message) {}
 };
 
 
 struct MidiInputQueue : MidiInput {
-	int queueSize = 8192;
+	int queueMaxSize = 8192;
 	std::queue<MidiMessage> queue;
 	void onMessage(MidiMessage message) override;
 	/** If a MidiMessage is available, writes `message` and return true */
@@ -83,12 +122,15 @@ struct MidiInputQueue : MidiInput {
 
 
 struct MidiOutput : MidiIO {
-	RtMidiOut *rtMidiOut = NULL;
 	MidiOutput();
 	~MidiOutput();
-	void setDriver(int driver) override;
-	void setDevice(int device) override;
+	void setDeviceId(int deviceId) override;
 };
+
+
+void midiDestroy();
+/** Registers a new MIDI driver. Takes pointer ownership. */
+void midiDriverAdd(int driverId, MidiDriver *driver);
 
 
 } // namespace rack

@@ -1,11 +1,14 @@
 #pragma once
 
 
-#include "util/math.hpp"
+#include "util/common.hpp"
 #include "nanovg.h"
 
 
 namespace rack {
+
+
+// TODO Make these non-inline in Rack v1
 
 
 inline NVGcolor colorClip(NVGcolor a) {
@@ -53,6 +56,14 @@ inline NVGcolor colorScreen(NVGcolor a, NVGcolor b) {
 	c = colorClip(c);
 	return c;
 }
+
+inline NVGcolor colorAlpha(NVGcolor a, float alpha) {
+	a.a *= alpha;
+	return a;
+}
+
+NVGcolor colorFromHexString(std::string s);
+std::string colorToHexString(NVGcolor c);
 
 
 } // namespace rack

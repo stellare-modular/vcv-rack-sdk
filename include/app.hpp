@@ -46,6 +46,8 @@ struct SVGPanel;
 static const float RACK_GRID_WIDTH = 15;
 static const float RACK_GRID_HEIGHT = 380;
 static const Vec RACK_GRID_SIZE = Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+static const std::string PRESET_FILTERS = "VCV Rack module preset (.vcvm):vcvm";
+static const std::string PATCH_FILTERS = "VCV Rack patch (.vcv):vcv";
 
 
 struct ModuleWidget : OpaqueWidget {
@@ -68,6 +70,12 @@ struct ModuleWidget : OpaqueWidget {
 
 	virtual json_t *toJson();
 	virtual void fromJson(json_t *rootJ);
+	void copyClipboard();
+	void pasteClipboard();
+	void save(std::string filename);
+	void load(std::string filename);
+	void loadDialog();
+	void saveDialog();
 
 	virtual void create();
 	virtual void _delete();
@@ -145,6 +153,7 @@ struct RackWidget : OpaqueWidget {
 	WireContainer *wireContainer;
 	std::string lastPath;
 	Vec lastMousePos;
+	bool lockModules = false;
 
 	RackWidget();
 	~RackWidget();
@@ -153,17 +162,20 @@ struct RackWidget : OpaqueWidget {
 	void clear();
 	/** Clears the rack and loads the template patch */
 	void reset();
-	void openDialog();
+	void loadDialog();
 	void saveDialog();
 	void saveAsDialog();
 	/** If `lastPath` is defined, ask the user to reload it */
 	void revert();
 	/** Disconnects all wires */
 	void disconnect();
-	void savePatch(std::string filename);
-	void loadPatch(std::string filename);
+	void save(std::string filename);
+	void load(std::string filename);
 	json_t *toJson();
 	void fromJson(json_t *rootJ);
+	/** Creates a module and adds it to the rack */
+	ModuleWidget *moduleFromJson(json_t *moduleJ);
+	void pastePresetClipboard();
 
 	void addModule(ModuleWidget *m);
 	/** Removes the module and transfers ownership to the caller */
@@ -533,20 +545,24 @@ struct RackScene : Scene {
 extern std::string gApplicationName;
 extern std::string gApplicationVersion;
 extern std::string gApiHost;
+extern std::string gLatestVersion;
+extern bool gCheckVersion;
 
 // Easy access to "singleton" widgets
 extern RackScene *gRackScene;
 extern RackWidget *gRackWidget;
 extern Toolbar *gToolbar;
 
-void appInit();
+void appInit(bool devMode);
 void appDestroy();
 void appModuleBrowserCreate();
 json_t *appModuleBrowserToJson();
 void appModuleBrowserFromJson(json_t *rootJ);
 
 
+/** Deprecated. Will be removed in v1 */
 json_t *colorToJson(NVGcolor color);
+/** Deprecated. Will be removed in v1 */
 NVGcolor jsonToColor(json_t *colorJ);
 
 

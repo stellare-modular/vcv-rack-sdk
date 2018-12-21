@@ -1,5 +1,6 @@
 #pragma once
 #include "widgets.hpp"
+#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -44,6 +45,8 @@ Vec windowGetWindowPos();
 void windowSetWindowPos(Vec pos);
 bool windowIsMaximized();
 void windowSetTheme(NVGcolor bg, NVGcolor fg);
+void windowSetFullScreen(bool fullScreen);
+bool windowGetFullScreen();
 
 
 } // namespace rack

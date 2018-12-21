@@ -8,6 +8,8 @@ endif
 
 include $(RACK_DIR)/arch.mk
 
+OBJCOPY ?= objcopy
+
 FLAGS += -DVERSION=$(VERSION)
 # Generate dependency files alongside the object files
 FLAGS += -MMD -MP
@@ -22,10 +24,10 @@ endif
 CXXFLAGS += -std=c++11
 
 
-ifeq ($(ARCH), lin)
+ifdef ARCH_LIN
 	FLAGS += -DARCH_LIN
 endif
-ifeq ($(ARCH), mac)
+ifdef ARCH_MAC
 	FLAGS += -DARCH_MAC
 	CXXFLAGS += -stdlib=libc++
 	LDFLAGS += -stdlib=libc++
@@ -33,7 +35,7 @@ ifeq ($(ARCH), mac)
 	FLAGS += $(MAC_SDK_FLAGS)
 	LDFLAGS += $(MAC_SDK_FLAGS)
 endif
-ifeq ($(ARCH), win)
+ifdef ARCH_WIN
 	FLAGS += -DARCH_WIN
 	FLAGS += -D_USE_MATH_DEFINES
 endif
@@ -43,33 +45,42 @@ CXXFLAGS += $(FLAGS)
 
 
 # Derive object files from sources and place them before user-defined objects
-SOURCE_OBJECTS := $(patsubst %, build/%.o, $(SOURCES))
+OBJECTS := $(patsubst %, build/%.o, $(SOURCES)) $(OBJECTS)
+OBJECTS += $(patsubst %, build/%.bin.o, $(BINARIES))
 DEPENDENCIES := $(patsubst %, build/%.d, $(SOURCES))
 
 # Final targets
 
-$(TARGET): $(SOURCE_OBJECTS) $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 -include $(DEPENDENCIES)
 
-build/%.c.o: %.c | dep
+build/%.c.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-build/%.cpp.o: %.cpp | dep
+build/%.cpp.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/%.cc.o: %.cc | dep
+build/%.cc.o: %.cc
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/%.m.o: %.m | dep
+build/%.m.o: %.m
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-# Dummy target
-dep:
-
-.PHONY: dep
+build/%.bin.o: %
+	@mkdir -p $(@D)
+ifdef ARCH_LIN
+	$(OBJCOPY) -I binary -O elf64-x86-64 -B i386:x86-64 --rename-section .data=.rodata,alloc,load,readonly,data,contents $< $@
+endif
+ifdef ARCH_WIN
+	$(OBJCOPY) -I binary -O pe-x86-64 -B i386:x86-64 --rename-section .data=.rodata,alloc,load,readonly,data,contents $< $@
+endif
+ifdef ARCH_MAC
+	@# Apple makes this needlessly complicated, so just generate a C file with an array.
+	xxd -i $< | $(CC) $(MAC_SDK_FLAGS) -c -o $@ -xc -
+endif
