@@ -2,20 +2,18 @@ ifndef RACK_DIR
 $(error RACK_DIR is not defined)
 endif
 
-ifndef VERSION
-$(error VERSION is not defined)
-endif
-
 include $(RACK_DIR)/arch.mk
 
 OBJCOPY ?= objcopy
+STRIP ?= strip
 
-FLAGS += -DVERSION=$(VERSION)
 # Generate dependency files alongside the object files
 FLAGS += -MMD -MP
+# Debugger symbols. These are removed with `strip`.
 FLAGS += -g
 # Optimization
-FLAGS += -O3 -march=nocona -ffast-math -fno-finite-math-only
+FLAGS += -O3 -march=nocona -funsafe-math-optimizations
+# Warnings
 FLAGS += -Wall -Wextra -Wno-unused-parameter
 
 ifneq ($(ARCH), mac)

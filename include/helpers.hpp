@@ -1,129 +1,167 @@
-#include "plugin.hpp"
-#include "engine.hpp"
+#pragma once
+#include "plugin/Model.hpp"
+#include "ui/MenuOverlay.hpp"
+#include "ui/MenuItem.hpp"
+#include "ui/MenuLabel.hpp"
+#include "ui/Menu.hpp"
+#include "app/PortWidget.hpp"
+#include "app/ParamQuantity.hpp"
+#include "app/ParamWidget.hpp"
+#include "app/Scene.hpp"
+#include "engine/Module.hpp"
 #include "app.hpp"
+#include "window.hpp"
 
 
 namespace rack {
 
 
 template <class TModule, class TModuleWidget, typename... Tags>
-Model *createModel(std::string author, std::string slug, std::string name, Tags... tags) {
-	struct TModel : Model {
-		Module *createModule() override {
-			TModule *module = new TModule();
-			return module;
+plugin::Model *createModel(std::string slug) {
+	struct TModel : plugin::Model {
+		engine::Module *createModule() override {
+			TModule *m = new TModule;
+			m->model = this;
+			return m;
 		}
-		ModuleWidget *createModuleWidget() override {
-			TModule *module = new TModule();
-			TModuleWidget *moduleWidget = new TModuleWidget(module);
-			moduleWidget->model = this;
-			return moduleWidget;
+		app::ModuleWidget *createModuleWidget() override {
+			TModule *m = new TModule;
+			m->model = this;
+			TModuleWidget *mw = new TModuleWidget(m);
+			mw->model = this;
+			return mw;
 		}
-		ModuleWidget *createModuleWidgetNull() override {
-			TModuleWidget *moduleWidget = new TModuleWidget(NULL);
-			moduleWidget->model = this;
-			return moduleWidget;
+		app::ModuleWidget *createModuleWidgetNull() override {
+			TModuleWidget *mw = new TModuleWidget(NULL);
+			mw->model = this;
+			return mw;
 		}
 	};
-	Model *model = new TModel();
-	model->author = author;
-	model->slug = slug;
-	model->name = name;
-	model->tags = {tags...};
-	return model;
+
+	plugin::Model *o = new TModel;
+	o->slug = slug;
+	return o;
 }
 
 template <class TWidget>
-TWidget *createWidget(Vec pos) {
-	TWidget *w = new TWidget();
-	w->box.pos = pos;
-	return w;
+TWidget *createWidget(math::Vec pos) {
+	TWidget *o = new TWidget;
+	o->box.pos = pos;
+	return o;
 }
 
-/** Deprecated. Use createWidget<TScrew>() instead */
-template <class TScrew>
-DEPRECATED TScrew *createScrew(Vec pos) {
-	return createWidget<TScrew>(pos);
-}
-
-template <class TParamWidget>
-TParamWidget *createParam(Vec pos, Module *module, int paramId, float minValue, float maxValue, float defaultValue) {
-	TParamWidget *param = new TParamWidget();
-	param->box.pos = pos;
-	param->module = module;
-	param->paramId = paramId;
-	param->setLimits(minValue, maxValue);
-	param->setDefaultValue(defaultValue);
-	return param;
+template <class TWidget>
+TWidget *createWidgetCentered(math::Vec pos) {
+	TWidget *o = new TWidget;
+	o->box.pos = pos.minus(o->box.size.div(2));;
+	return o;
 }
 
 template <class TParamWidget>
-TParamWidget *createParamCentered(Vec pos, Module *module, int paramId, float minValue, float maxValue, float defaultValue) {
-	TParamWidget *param = new TParamWidget();
-	param->box.pos = pos.minus(param->box.size.div(2));
-	param->module = module;
-	param->paramId = paramId;
-	param->setLimits(minValue, maxValue);
-	param->setDefaultValue(defaultValue);
-	return param;
+TParamWidget *createParam(math::Vec pos, engine::Module *module, int paramId) {
+	TParamWidget *o = new TParamWidget;
+	o->box.pos = pos;
+	if (module) {
+		engine::ParamQuantityFactory *f = module->params[paramId].paramQuantityFactory;
+		if (f)
+			o->paramQuantity = f->create();
+		else
+			o->paramQuantity = new app::ParamQuantity;
+		o->paramQuantity->module = module;
+		o->paramQuantity->paramId = paramId;
+	}
+	return o;
 }
 
-template <class TPort>
-TPort *createInput(Vec pos, Module *module, int inputId) {
-	TPort *port = new TPort();
-	port->box.pos = pos;
-	port->module = module;
-	port->type = Port::INPUT;
-	port->portId = inputId;
-	return port;
+template <class TParamWidget>
+TParamWidget *createParamCentered(math::Vec pos, engine::Module *module, int paramId) {
+	TParamWidget *o = createParam<TParamWidget>(pos, module, paramId);
+	o->box.pos = o->box.pos.minus(o->box.size.div(2));
+	return o;
 }
 
-template <class TPort>
-TPort *createInputCentered(Vec pos, Module *module, int inputId) {
-	TPort *port = new TPort();
-	port->box.pos = pos.minus(port->box.size.div(2));
-	port->module = module;
-	port->type = Port::INPUT;
-	port->portId = inputId;
-	return port;
+template <class TPortWidget>
+TPortWidget *createInput(math::Vec pos, engine::Module *module, int inputId) {
+	TPortWidget *o = new TPortWidget;
+	o->box.pos = pos;
+	o->module = module;
+	o->type = app::PortWidget::INPUT;
+	o->portId = inputId;
+	return o;
 }
 
-template <class TPort>
-TPort *createOutput(Vec pos, Module *module, int outputId) {
-	TPort *port = new TPort();
-	port->box.pos = pos;
-	port->module = module;
-	port->type = Port::OUTPUT;
-	port->portId = outputId;
-	return port;
+template <class TPortWidget>
+TPortWidget *createInputCentered(math::Vec pos, engine::Module *module, int inputId) {
+	TPortWidget *o = new TPortWidget;
+	o->box.pos = pos.minus(o->box.size.div(2));
+	o->module = module;
+	o->type = app::PortWidget::INPUT;
+	o->portId = inputId;
+	return o;
 }
 
-template <class TPort>
-TPort *createOutputCentered(Vec pos, Module *module, int outputId) {
-	TPort *port = new TPort();
-	port->box.pos = pos.minus(port->box.size.div(2));
-	port->module = module;
-	port->type = Port::OUTPUT;
-	port->portId = outputId;
-	return port;
+template <class TPortWidget>
+TPortWidget *createOutput(math::Vec pos, engine::Module *module, int outputId) {
+	TPortWidget *o = new TPortWidget;
+	o->box.pos = pos;
+	o->module = module;
+	o->type = app::PortWidget::OUTPUT;
+	o->portId = outputId;
+	return o;
+}
+
+template <class TPortWidget>
+TPortWidget *createOutputCentered(math::Vec pos, engine::Module *module, int outputId) {
+	TPortWidget *o = new TPortWidget;
+	o->box.pos = pos.minus(o->box.size.div(2));
+	o->module = module;
+	o->type = app::PortWidget::OUTPUT;
+	o->portId = outputId;
+	return o;
 }
 
 template <class TModuleLightWidget>
-TModuleLightWidget *createLight(Vec pos, Module *module, int firstLightId) {
-	TModuleLightWidget *light = new TModuleLightWidget();
-	light->box.pos = pos;
-	light->module = module;
-	light->firstLightId = firstLightId;
-	return light;
+TModuleLightWidget *createLight(math::Vec pos, engine::Module *module, int firstLightId) {
+	TModuleLightWidget *o = new TModuleLightWidget;
+	o->box.pos = pos;
+	o->module = module;
+	o->firstLightId = firstLightId;
+	return o;
 }
 
 template <class TModuleLightWidget>
-TModuleLightWidget *createLightCentered(Vec pos, Module *module, int firstLightId) {
-	TModuleLightWidget *light = new TModuleLightWidget();
-	light->box.pos = pos.minus(light->box.size.div(2));
-	light->module = module;
-	light->firstLightId = firstLightId;
-	return light;
+TModuleLightWidget *createLightCentered(math::Vec pos, engine::Module *module, int firstLightId) {
+	TModuleLightWidget *o = new TModuleLightWidget;
+	o->box.pos = pos.minus(o->box.size.div(2));
+	o->module = module;
+	o->firstLightId = firstLightId;
+	return o;
+}
+
+template <class TMenuLabel = ui::MenuLabel>
+TMenuLabel *createMenuLabel(std::string text) {
+	TMenuLabel *o = new TMenuLabel;
+	o->text = text;
+	return o;
+}
+
+template <class TMenuItem = ui::MenuItem>
+TMenuItem *createMenuItem(std::string text, std::string rightText = "") {
+	TMenuItem *o = new TMenuItem;
+	o->text = text;
+	o->rightText = rightText;
+	return o;
+}
+
+inline ui::Menu *createMenu() {
+	ui::Menu *o = new ui::Menu;
+	o->box.pos = APP->window->mousePos;
+
+	ui::MenuOverlay *menuOverlay = new ui::MenuOverlay;
+	menuOverlay->addChild(o);
+
+	APP->scene->addChild(menuOverlay);
+	return o;
 }
 
 

@@ -1,15 +1,19 @@
 #pragma once
-
+#include "dsp/common.hpp"
+#include "dsp/frame.hpp"
+#include "dsp/ringbuffer.hpp"
+#include "dsp/fir.hpp"
+#include "dsp/window.hpp"
 #include <assert.h>
 #include <string.h>
 #include <speex/speex_resampler.h>
-#include "frame.hpp"
-#include "ringbuffer.hpp"
-#include "fir.hpp"
 
 
 namespace rack {
+namespace dsp {
 
+
+/** Resamples by a fixed rational factor. */
 template<int CHANNELS>
 struct SampleRateConverter {
 	SpeexResamplerState *st = NULL;
@@ -90,8 +94,8 @@ struct SampleRateConverter {
 		}
 		else {
 			// Simply copy the buffer without conversion
-			int frames = min(*inFrames, *outFrames);
-			memcpy(out, in, frames * sizeof(Frame<CHANNELS>));
+			int frames = std::min(*inFrames, *outFrames);
+			std::memcpy(out, in, frames * sizeof(Frame<CHANNELS>));
 			*inFrames = frames;
 			*outFrames = frames;
 		}
@@ -99,6 +103,7 @@ struct SampleRateConverter {
 };
 
 
+/** Downsamples by an integer factor. */
 template<int OVERSAMPLE, int QUALITY>
 struct Decimator {
 	float inBuffer[OVERSAMPLE*QUALITY];
@@ -112,12 +117,12 @@ struct Decimator {
 	}
 	void reset() {
 		inIndex = 0;
-		memset(inBuffer, 0, sizeof(inBuffer));
+		std::memset(inBuffer, 0, sizeof(inBuffer));
 	}
 	/** `in` must be length OVERSAMPLE */
 	float process(float *in) {
 		// Copy input to buffer
-		memcpy(&inBuffer[inIndex], in, OVERSAMPLE*sizeof(float));
+		std::memcpy(&inBuffer[inIndex], in, OVERSAMPLE*sizeof(float));
 		// Advance index
 		inIndex += OVERSAMPLE;
 		inIndex %= OVERSAMPLE*QUALITY;
@@ -133,6 +138,7 @@ struct Decimator {
 };
 
 
+/** Upsamples by an integer factor. */
 template<int OVERSAMPLE, int QUALITY>
 struct Upsampler {
 	float inBuffer[QUALITY];
@@ -146,7 +152,7 @@ struct Upsampler {
 	}
 	void reset() {
 		inIndex = 0;
-		memset(inBuffer, 0, sizeof(inBuffer));
+		std::memset(inBuffer, 0, sizeof(inBuffer));
 	}
 	/** `out` must be length OVERSAMPLE */
 	void process(float in, float *out) {
@@ -171,4 +177,5 @@ struct Upsampler {
 };
 
 
+} // namespace dsp
 } // namespace rack

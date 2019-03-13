@@ -269,23 +269,22 @@ extern "C" {
 #define GLFW_VERSION_REVISION       0
 /*! @} */
 
-/*! @name Boolean values
- *  @{ */
 /*! @brief One.
  *
- *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 1.  You can also use `1` or `true` or `_True`
- *  or `GL_TRUE` or whatever you want.
+ *  This is only semantic sugar for the number 1.  You can instead use `1` or
+ *  `true` or `_True` or `GL_TRUE` or anything else that is equal to one.
+ *
+ *  @ingroup init
  */
 #define GLFW_TRUE                   1
 /*! @brief Zero.
  *
- *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 0.  You can also use `0` or `false` or
- *  `_False` or `GL_FALSE` or whatever you want.
+ *  This is only semantic sugar for the number 0.  You can instead use `0` or
+ *  `false` or `_False` or `GL_FALSE` or anything else that is equal to zero.
+ *
+ *  @ingroup init
  */
 #define GLFW_FALSE                  0
-/*! @} */
 
 /*! @name Key and button actions
  *  @{ */
@@ -313,6 +312,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states
+ *  @brief Joystick hat states.
  *
  *  See [joystick hat input](@ref joystick_hat) for how these are used.
  *
@@ -819,6 +819,12 @@ extern "C" {
  *  Mouse cursor hover [window attribute](@ref GLFW_HOVERED_attrib).
  */
 #define GLFW_HOVERED                0x0002000B
+/*! @brief Input focus on calling show window hint and attribute
+ *
+ *  Input focus [window hint](@ref GLFW_FOCUS_ON_SHOW_hint) or
+ *  [window attribute](@ref GLFW_FOCUS_ON_SHOW_attrib).
+ */
+#define GLFW_FOCUS_ON_SHOW          0x0002000C
 
 /*! @brief Framebuffer bit depth hint.
  *
@@ -967,6 +973,10 @@ extern "C" {
  *  [attribute](@ref GLFW_CLIENT_API_attrib).
  */
 #define GLFW_CONTEXT_CREATION_API   0x0002200B
+/*! @brief Window content area scaling window
+ *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
+ */
+#define GLFW_SCALE_TO_MONITOR       0x0002200C
 
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 #define GLFW_COCOA_FRAME_NAME         0x00023002
@@ -1050,9 +1060,20 @@ extern "C" {
 
 /*! @addtogroup init
  *  @{ */
+/*! @brief Joystick hat buttons init hint.
+ *
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS)
+ */
 #define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
-
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES)
+ */
 #define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR)
+ */
 #define GLFW_COCOA_MENUBAR          0x00051002
 /*! @} */
 
@@ -1123,7 +1144,7 @@ typedef struct GLFWwindow GLFWwindow;
  *
  *  @since Added in version 3.1.
  *
- *  @ingroup cursor
+ *  @ingroup input
  */
 typedef struct GLFWcursor GLFWcursor;
 
@@ -1561,6 +1582,8 @@ typedef struct GLFWgammaramp
  *
  *  @since Added in version 2.1.
  *  @glfw3 Removed format and bytes-per-pixel members.
+ *
+ *  @ingroup window
  */
 typedef struct GLFWimage
 {
@@ -1583,6 +1606,8 @@ typedef struct GLFWimage
  *  @sa @ref glfwGetGamepadState
  *
  *  @since Added in version 3.3.
+ *
+ *  @ingroup input
  */
 typedef struct GLFWgamepadstate
 {
@@ -2131,9 +2156,9 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
 
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *
- *  This function generates a 256-element gamma ramp from the specified exponent
- *  and then calls @ref glfwSetGammaRamp with it.  The value must be a finite
- *  number greater than zero.
+ *  This function generates an appropriately sized gamma ramp from the specified
+ *  exponent and then calls @ref glfwSetGammaRamp with it.  The value must be
+ *  a finite number greater than zero.
  *
  *  The software controlled gamma ramp is applied _in addition_ to the hardware
  *  gamma correction, which today is usually an approximation of sRGB gamma.
@@ -2212,8 +2237,8 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark Gamma ramp sizes other than 256 are not supported by all platforms
- *  or graphics hardware.
+ *  @remark The size of the specified gamma ramp should match the size of the
+ *  current ramp for that monitor.
  *
  *  @remark @win32 The gamma ramp size must be 256.
  *
@@ -3085,6 +3110,11 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  *  hidden.  If the window is already visible or is in full screen mode, this
  *  function does nothing.
  *
+ *  By default, windowed mode windows are focused when shown
+ *  Set the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint
+ *  to change this behavior for all newly created windows, or change the
+ *  behavior for an existing window with @ref glfwSetWindowAttrib.
+ *
  *  @param[in] window The window to make visible.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
@@ -3131,6 +3161,10 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  By default, both windowed and full screen mode windows are focused when
  *  initially created.  Set the [GLFW_FOCUSED](@ref GLFW_FOCUSED_hint) to
  *  disable this behavior.
+ *
+ *  Also by default, windowed mode windows are focused when shown
+ *  with @ref glfwShowWindow. Set the
+ *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) to disable this behavior.
  *
  *  __Do not use this function__ to steal focus from other applications unless
  *  you are certain that is what the user wants.  Focus stealing can be
@@ -3306,8 +3340,9 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *
  *  The supported attributes are [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
  *  [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
- *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
- *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib).
+ *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
+ *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
+ *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib).
  *
  *  Some of these attributes are ignored for full screen windows.  The new
  *  value will take effect if the window is later made windowed.
@@ -3683,10 +3718,6 @@ GLFWAPI void glfwPollEvents(void);
  *  GLFW will pass those events on to the application callbacks before
  *  returning.
  *
- *  If no windows exist, this function returns immediately.  For synchronization
- *  of threads in applications that do not create windows, use your threading
- *  library of choice.
- *
  *  Event processing is not required for joystick input to work.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
@@ -3734,13 +3765,12 @@ GLFWAPI void glfwWaitEvents(void);
  *  GLFW will pass those events on to the application callbacks before
  *  returning.
  *
- *  If no windows exist, this function returns immediately.  For synchronization
- *  of threads in applications that do not create windows, use your threading
- *  library of choice.
- *
  *  Event processing is not required for joystick input to work.
  *
  *  @param[in] timeout The maximum amount of time, in seconds, to wait.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @reentrancy This function must not be called from a callback.
  *
@@ -3760,10 +3790,6 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout);
  *
  *  This function posts an empty event from the current thread to the event
  *  queue, causing @ref glfwWaitEvents or @ref glfwWaitEventsTimeout to return.
- *
- *  If no windows exist, this function returns immediately.  For synchronization
- *  of threads in applications that do not create windows, use your threading
- *  library of choice.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -3995,8 +4021,8 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  *  `GLFW_RELEASE`.
  *
  *  If the @ref GLFW_STICKY_MOUSE_BUTTONS input mode is enabled, this function
- *  `GLFW_PRESS` the first time you call it for a mouse button that was pressed,
- *  even if that mouse button has already been released.
+ *  returns `GLFW_PRESS` the first time you call it for a mouse button that was
+ *  pressed, even if that mouse button has already been released.
  *
  *  @param[in] window The desired window.
  *  @param[in] button The desired [mouse button](@ref buttons).
@@ -4267,9 +4293,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  The character callback behaves as system text input normally does and will
  *  not be called if modifier keys are held down that would prevent normal text
  *  input on that platform, for example a Super (Command) key on macOS or Alt key
- *  on Windows.  There is a
- *  [character with modifiers callback](@ref glfwSetCharModsCallback) that
- *  receives these events.
+ *  on Windows.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -4565,7 +4589,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  Each element in the array is one of the following values:
  *
  *  Name                  | Value
- *  --------------------- | --------------------------------
+ *  ----                  | -----
  *  `GLFW_HAT_CENTERED`   | 0
  *  `GLFW_HAT_UP`         | 1
  *  `GLFW_HAT_RIGHT`      | 2
@@ -4885,6 +4909,8 @@ GLFWAPI const char* glfwGetGamepadName(int jid);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_ENUM.
  *
+ *  @thread_safety This function must only be called from the main thread.
+ *
  *  @sa @ref gamepad
  *  @sa @ref glfwUpdateGamepadMappings
  *  @sa @ref glfwJoystickIsGamepad
@@ -4905,8 +4931,6 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
- *
- *  @remark @wayland Clipboard is currently unimplemented.
  *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
@@ -4935,8 +4959,6 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
- *
- *  @remark @wayland Clipboard is currently unimplemented.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref

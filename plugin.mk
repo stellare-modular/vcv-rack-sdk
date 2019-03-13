@@ -2,16 +2,20 @@ ifndef RACK_DIR
 $(error RACK_DIR is not defined)
 endif
 
+SLUG := $(shell jq .slug plugin.json)
+VERSION := $(shell jq .version plugin.json)
+
 ifndef SLUG
-$(error SLUG is not defined)
+$(error SLUG could not be found in manifest)
+endif
+ifndef VERSION
+$(error VERSION could not be found in manifest)
 endif
 
-STRIP ?= strip
+DISTRIBUTABLES += plugin.json
 
-FLAGS += -DSLUG=$(SLUG)
 FLAGS += -fPIC
 FLAGS += -I$(RACK_DIR)/include -I$(RACK_DIR)/dep/include
-
 
 include $(RACK_DIR)/arch.mk
 
@@ -30,7 +34,7 @@ endif
 ifdef ARCH_WIN
 	LDFLAGS += -shared -L$(RACK_DIR) -lRack
 	TARGET := plugin.dll
-	RACK_USER_DIR ?= $(USERPROFILE)/Documents/Rack
+	RACK_USER_DIR ?= "$(USERPROFILE)"/Documents/Rack
 endif
 
 

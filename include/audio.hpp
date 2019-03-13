@@ -1,5 +1,5 @@
 #pragma once
-
+#include "common.hpp"
 #include <jansson.h>
 
 #pragma GCC diagnostic push
@@ -13,7 +13,12 @@
 namespace rack {
 
 
-struct AudioIO {
+/** Audio driver
+*/
+namespace audio {
+
+
+struct Port {
 	// Stream properties
 	int driver = 0;
 	int device = -1;
@@ -27,8 +32,8 @@ struct AudioIO {
 	/** Cached */
 	RtAudio::DeviceInfo deviceInfo;
 
-	AudioIO();
-	virtual ~AudioIO();
+	Port();
+	virtual ~Port();
 
 	std::vector<int> getDrivers();
 	std::string getDriverName(int driver);
@@ -62,4 +67,5 @@ struct AudioIO {
 };
 
 
+} // namespace audio
 } // namespace rack
