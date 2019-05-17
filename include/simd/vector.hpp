@@ -1,9 +1,12 @@
 #pragma once
 #include <cstring>
-#include <emmintrin.h>
+#include <x86intrin.h>
 
 
 namespace rack {
+
+
+/** Abstraction of byte-aligned values for SIMD CPU acceleration. */
 namespace simd {
 
 

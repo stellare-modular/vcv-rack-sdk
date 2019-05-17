@@ -20,14 +20,15 @@ struct Engine {
 	void start();
 	/** Stops engine thread. */
 	void stop();
-	void setThreadCount(int threadCount);
-	int getThreadCount();
 	void setPaused(bool paused);
 	bool isPaused();
-	void setSampleRate(float sampleRate);
 	float getSampleRate();
 	/** Returns the inverse of the current sample rate. */
 	float getSampleTime();
+	/** Causes worker threads to block on a mutex instead of spinlock.
+	Call this in your Module::step() method to hint that the operation will take more than ~0.1 ms.
+	*/
+	void yieldWorkers();
 
 	// Modules
 	/** Adds a module to the rack engine.

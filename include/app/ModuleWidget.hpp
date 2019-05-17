@@ -15,10 +15,12 @@ namespace app {
 /** Manages an engine::Module in the rack. */
 struct ModuleWidget : widget::OpaqueWidget {
 	plugin::Model *model = NULL;
-	/** Owns the module pointer */
+	/** Owned. */
 	engine::Module *module = NULL;
 
 	widget::Widget *panel = NULL;
+	/** Note that the indexes of these vectors do not necessarily correspond with the indexes of `Module::params` etc.
+	*/
 	std::vector<ParamWidget*> params;
 	std::vector<PortWidget*> outputs;
 	std::vector<PortWidget*> inputs;
@@ -27,7 +29,7 @@ struct ModuleWidget : widget::OpaqueWidget {
 	math::Vec oldPos;
 
 	ModuleWidget();
-	DEPRECATED ModuleWidget(engine::Module *module) {
+	DEPRECATED ModuleWidget(engine::Module *module) : ModuleWidget() {
 		setModule(module);
 	}
 	~ModuleWidget();
@@ -35,12 +37,11 @@ struct ModuleWidget : widget::OpaqueWidget {
 	void draw(const DrawArgs &args) override;
 	void drawShadow(const DrawArgs &args);
 
-	void onHover(const widget::HoverEvent &e) override;
-	void onButton(const widget::ButtonEvent &e) override;
-	void onHoverKey(const widget::HoverKeyEvent &e) override;
-	void onDragStart(const widget::DragStartEvent &e) override;
-	void onDragEnd(const widget::DragEndEvent &e) override;
-	void onDragMove(const widget::DragMoveEvent &e) override;
+	void onButton(const event::Button &e) override;
+	void onHoverKey(const event::HoverKey &e) override;
+	void onDragStart(const event::DragStart &e) override;
+	void onDragEnd(const event::DragEnd &e) override;
+	void onDragMove(const event::DragMove &e) override;
 
 	/** Associates this ModuleWidget with the Module
 	Transfers ownership

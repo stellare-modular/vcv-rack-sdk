@@ -2,10 +2,6 @@
 #include "common.hpp"
 
 
-/** Accesses the global App pointer */
-#define APP rack::appGet()
-
-
 namespace rack {
 
 
@@ -23,9 +19,9 @@ struct Window;
 struct PatchManager;
 
 
-namespace widget {
-	struct EventState;
-};
+namespace event {
+	struct State;
+} // namespace event
 
 
 namespace app {
@@ -35,22 +31,25 @@ namespace app {
 
 /** Contains the application state  */
 struct App {
-	widget::EventState *event = NULL;
+	event::State *event = NULL;
 	app::Scene *scene = NULL;
 	engine::Engine *engine = NULL;
 	Window *window = NULL;
 	history::State *history = NULL;
 	PatchManager *patch = NULL;
 
-	void init(bool headless);
+	void init();
 	~App();
 };
 
 
-void appInit(bool headless);
+void appInit();
 void appDestroy();
 /** Returns the global App pointer */
 App *appGet();
+
+/** Accesses the global App pointer */
+#define APP appGet()
 
 
 } // namespace rack

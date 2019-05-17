@@ -20,6 +20,11 @@ namespace app {
 namespace history {
 
 
+/** An undo action with an inverse redo action.
+
+Pointers to Modules, Params, etc. are not allowed in Actions because the object they refer to may be deleted and restored.
+Instead, use moduleIds, etc.
+*/
 struct Action {
 	/** Name of the action, lowercase. Used in the phrase "Undo ..." */
 	std::string name;
@@ -48,10 +53,11 @@ struct ComplexAction : Action {
 	void undo() override;
 	void redo() override;
 	void push(Action *action);
+	bool isEmpty();
 };
 
 
-/** An action operating on a module
+/** An action operating on a module.
 Subclass this to create your own custom actions for your module.
 */
 struct ModuleAction : Action {
@@ -150,8 +156,11 @@ struct CableRemove : InverseAction<CableAdd> {
 
 struct State {
 	std::vector<Action*> actions;
-	int actionIndex = 0;
+	int actionIndex;
+	/** Action index of saved patch state. */
+	int savedIndex;
 
+	State();
 	~State();
 	void clear();
 	void push(Action *action);
@@ -161,6 +170,8 @@ struct State {
 	bool canRedo();
 	std::string getUndoName();
 	std::string getRedoName();
+	void setSaved();
+	bool isSaved();
 };
 
 

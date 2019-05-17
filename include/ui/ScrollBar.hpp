@@ -14,15 +14,14 @@ struct ScrollBar : widget::OpaqueWidget {
 		HORIZONTAL
 	};
 	Orientation orientation;
-	BNDwidgetState state = BND_DEFAULT;
 	float offset = 0.0;
 	float size = 0.0;
 
 	ScrollBar();
 	void draw(const DrawArgs &args) override;
-	void onDragStart(const widget::DragStartEvent &e) override;
-	void onDragMove(const widget::DragMoveEvent &e) override;
-	void onDragEnd(const widget::DragEndEvent &e) override;
+	void onDragStart(const event::DragStart &e) override;
+	void onDragMove(const event::DragMove &e) override;
+	void onDragEnd(const event::DragEnd &e) override;
 };
 
 

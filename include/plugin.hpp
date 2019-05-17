@@ -18,8 +18,8 @@ void init();
 void destroy();
 void logIn(const std::string &email, const std::string &password);
 void logOut();
-/** Returns whether a new plugin is available, and downloads it unless doing a dry run */
-bool sync(bool dryRun);
+void queryUpdates();
+void syncUpdates();
 void cancelDownload();
 bool isLoggedIn();
 Plugin *getPlugin(const std::string &pluginSlug);
@@ -29,12 +29,20 @@ std::string normalizeTag(const std::string &tag);
 bool isSlugValid(const std::string &slug);
 
 
+struct Update {
+	std::string pluginSlug;
+	std::string version;
+	std::string changelogUrl;
+};
+
+
 extern const std::set<std::string> allowedTags;
 extern std::vector<Plugin*> plugins;
-extern bool isDownloading;
+
+extern std::string loginStatus;
+extern std::vector<Update> updates;
 extern float downloadProgress;
 extern std::string downloadName;
-extern std::string loginStatus;
 
 
 } // namespace plugin

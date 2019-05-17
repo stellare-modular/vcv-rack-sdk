@@ -6,6 +6,8 @@
 #include "app/CableWidget.hpp"
 #include "app/PortWidget.hpp"
 #include "app/ParamWidget.hpp"
+#include "history.hpp"
+#include <map>
 
 
 namespace rack {
@@ -14,13 +16,15 @@ namespace app {
 
 /** Container for ModuleWidget and CableWidget. */
 struct RackWidget : widget::OpaqueWidget {
-	widget::FramebufferWidget *rails;
 	widget::Widget *moduleContainer;
 	widget::Widget *cableContainer;
 	CableWidget *incompleteCable = NULL;
+	widget::FramebufferWidget *railFb;
 	/** The last mouse position in the RackWidget */
 	math::Vec mousePos;
 	ParamWidget *touchedParam = NULL;
+	std::map<int, math::Vec> moduleDragPositions;
+	int nextCableColorId = 0;
 
 	RackWidget();
 	~RackWidget();
@@ -28,11 +32,10 @@ struct RackWidget : widget::OpaqueWidget {
 	void step() override;
 	void draw(const DrawArgs &args) override;
 
-	void onHover(const widget::HoverEvent &e) override;
-	void onHoverKey(const widget::HoverKeyEvent &e) override;
-	void onDragHover(const widget::DragHoverEvent &e) override;
-	void onButton(const widget::ButtonEvent &e) override;
-	void onZoom(const widget::ZoomEvent &e) override;
+	void onHover(const event::Hover &e) override;
+	void onHoverKey(const event::HoverKey &e) override;
+	void onDragHover(const event::DragHover &e) override;
+	void onButton(const event::Button &e) override;
 
 	/** Completely clear the rack's modules and cables */
 	void clear();
@@ -50,11 +53,14 @@ struct RackWidget : widget::OpaqueWidget {
 	/** Removes the module and transfers ownership to the caller */
 	void removeModule(ModuleWidget *mw);
 	/** Sets a module's box if non-colliding. Returns true if set */
-	bool requestModuleBox(ModuleWidget *mw, math::Rect requestedBox);
+	bool requestModulePos(ModuleWidget *mw, math::Vec pos);
 	/** Moves a module to the closest non-colliding position */
-	bool requestModuleBoxNearest(ModuleWidget *mw, math::Rect requestedBox);
+	void setModulePosNearest(ModuleWidget *mw, math::Vec pos);
+	void setModulePosForce(ModuleWidget *mw, math::Vec pos);
 	ModuleWidget *getModule(int moduleId);
 	bool isEmpty();
+	void updateModuleDragPositions();
+	history::ComplexAction *getModuleDragAction();
 
 	// Cable methods
 
