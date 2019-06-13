@@ -1,6 +1,6 @@
 #pragma once
-#include "app/common.hpp"
-#include "widget/OpaqueWidget.hpp"
+#include <app/common.hpp>
+#include <widget/OpaqueWidget.hpp>
 
 
 namespace rack {
@@ -8,9 +8,11 @@ namespace app {
 
 
 struct MenuBar : widget::OpaqueWidget {
-	MenuBar();
 	void draw(const DrawArgs &args) override;
 };
+
+
+MenuBar *createMenuBar();
 
 
 } // namespace app

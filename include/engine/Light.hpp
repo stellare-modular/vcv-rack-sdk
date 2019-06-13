@@ -1,5 +1,5 @@
 #pragma once
-#include "common.hpp"
+#include <common.hpp>
 
 
 namespace rack {
@@ -14,7 +14,7 @@ struct Light {
 
 	/** Sets the brightness immediately with no light decay. */
 	void setBrightness(float brightness) {
-		value = (brightness > 0.f) ? brightness : 0.f;
+		value = brightness;
 	}
 
 	float getBrightness() {
@@ -23,19 +23,18 @@ struct Light {
 
 	/** Emulates light decay with slow fall but immediate rise. */
 	void setSmoothBrightness(float brightness, float deltaTime) {
-		float v = (brightness > 0.f) ? brightness : 0.f;
-		if (v < value) {
+		if (brightness < value) {
 			// Fade out light
 			const float lambda = 30.f;
-			value += (v - value) * lambda * deltaTime;
+			value += (brightness - value) * lambda * deltaTime;
 		}
 		else {
 			// Immediately illuminate light
-			value = v;
+			value = brightness;
 		}
 	}
 
-	/** Use `setSmoothBrightness(brightness, APP->engine->getSampleTime())` instead. */
+	/** Use `setSmoothBrightness(brightness, sampleTime * frames)` instead. */
 	DEPRECATED void setBrightnessSmooth(float brightness, float frames = 1.f) {
 		setSmoothBrightness(brightness, frames / 44100.f);
 	}

@@ -1,5 +1,5 @@
 #pragma once
-#include "common.hpp"
+#include <common.hpp>
 
 
 namespace rack {
@@ -22,8 +22,14 @@ std::string user(std::string filename);
 std::string plugin(plugin::Plugin *plugin, std::string filename);
 
 
+// Set these before calling init() to override the default paths
 extern std::string systemDir;
 extern std::string userDir;
+
+extern std::string pluginsPath;
+extern std::string settingsPath;
+extern std::string autosavePath;
+extern std::string templatePath;
 
 
 } // namespace asset

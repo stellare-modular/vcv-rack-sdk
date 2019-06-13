@@ -1,5 +1,5 @@
 #pragma once
-#include "dsp/common.hpp"
+#include <dsp/common.hpp>
 
 
 namespace rack {
@@ -57,6 +57,25 @@ struct SchmittTrigger {
 
 	bool isHigh() {
 		return state;
+	}
+};
+
+
+template <typename T>
+struct TSchmittTrigger {
+	T state;
+	TSchmittTrigger() {
+		reset();
+	}
+	void reset() {
+		state = T::mask();
+	}
+	T process(T in) {
+		T on = (in >= 1.f);
+		T off = (in <= 0.f);
+		T triggered = ~state & on;
+		state = on | (state & ~off);
+		return triggered;
 	}
 };
 

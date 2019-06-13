@@ -1,9 +1,9 @@
 #pragma once
-#include "app/common.hpp"
-#include "widget/OpaqueWidget.hpp"
-#include "app/RackScrollWidget.hpp"
-#include "app/RackWidget.hpp"
-#include "app/MenuBar.hpp"
+#include <app/common.hpp>
+#include <widget/OpaqueWidget.hpp>
+#include <app/RackScrollWidget.hpp>
+#include <app/RackWidget.hpp>
+#include <app/MenuBar.hpp>
 
 
 namespace rack {
@@ -17,7 +17,7 @@ struct Scene : widget::OpaqueWidget {
 	MenuBar *menuBar;
 	widget::Widget *moduleBrowser;
 
-	double lastAutoSaveTime = 0.0;
+	double lastAutosaveTime = 0.0;
 
 	// Version checking
 	bool checkVersion = true;

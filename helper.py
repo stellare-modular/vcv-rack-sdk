@@ -93,7 +93,7 @@ include $(RACK_DIR)/plugin.mk
 		f.write(makefile)
 
 	# Create plugin.hpp
-	plugin_hpp = """#include "rack.hpp"
+	plugin_hpp = """#include <rack.hpp>
 
 
 using namespace rack;
@@ -117,7 +117,7 @@ Plugin *pluginInstance;
 void init(Plugin *p) {
 	pluginInstance = p;
 
-	// Add modules here, e.g.
+	// Add modules here
 	// p->addModel(modelMyModule);
 
 	// Any other plugin initialization may go here.
@@ -160,6 +160,7 @@ def create_manifest(slug, plugin_dir="."):
 	manifest['name'] = input_default("Plugin name", manifest.get('name', slug))
 	manifest['version'] = input_default("Version", manifest.get('version', "1.0.0"))
 	manifest['license'] = input_default("License (if open-source, use license identifier from https://spdx.org/licenses/)", manifest.get('license', "proprietary"))
+	manifest['brand'] = input_default("Brand (prefix for all module names)", manifest.get('brand', manifest['name']))
 	manifest['author'] = input_default("Author", manifest.get('author', ""))
 	manifest['authorEmail'] = input_default("Author email (optional)", manifest.get('authorEmail', ""))
 	manifest['authorUrl'] = input_default("Author website URL (optional)", manifest.get('authorUrl', ""))
@@ -198,7 +199,7 @@ def create_module(slug, panel_filename=None, source_filename=None):
 		module_manifest['slug'] = slug
 		module_manifest['name'] = input_default("Module name", slug)
 		module_manifest['description'] = input_default("One-line description (optional)")
-		tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/plugin.cpp#L543 for list)")
+		tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/plugin.cpp#L511-L571 for list)")
 		tags = tags.split(",")
 		tags = [tag.strip() for tag in tags]
 		if len(tags) == 1 and tags[0] == "":
@@ -396,6 +397,7 @@ struct {identifier} : Module {{"""
 };"""
 
 	source += f"""
+
 
 struct {identifier}Widget : ModuleWidget {{
 	{identifier}Widget({identifier} *module) {{
