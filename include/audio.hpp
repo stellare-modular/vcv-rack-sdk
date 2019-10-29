@@ -1,5 +1,5 @@
 #pragma once
-
+#include <common.hpp>
 #include <jansson.h>
 
 #pragma GCC diagnostic push
@@ -13,10 +13,15 @@
 namespace rack {
 
 
-struct AudioIO {
+/** Audio driver
+*/
+namespace audio {
+
+
+struct Port {
 	// Stream properties
-	int driver = 0;
-	int device = -1;
+	int driverId = 0;
+	int deviceId = -1;
 	int offset = 0;
 	int maxChannels = 8;
 	int sampleRate = 44100;
@@ -27,20 +32,20 @@ struct AudioIO {
 	/** Cached */
 	RtAudio::DeviceInfo deviceInfo;
 
-	AudioIO();
-	virtual ~AudioIO();
+	Port();
+	virtual ~Port();
 
-	std::vector<int> getDrivers();
-	std::string getDriverName(int driver);
-	void setDriver(int driver);
+	std::vector<int> getDriverIds();
+	std::string getDriverName(int driverId);
+	void setDriverId(int driverId);
 
 	int getDeviceCount();
-	bool getDeviceInfo(int device, RtAudio::DeviceInfo *deviceInfo);
+	bool getDeviceInfo(int deviceId, RtAudio::DeviceInfo *deviceInfo);
 	/** Returns the number of inputs or outputs, whichever is greater */
-	int getDeviceChannels(int device);
-	std::string getDeviceName(int device);
-	std::string getDeviceDetail(int device, int offset);
-	void setDevice(int device, int offset);
+	int getDeviceChannels(int deviceId);
+	std::string getDeviceName(int deviceId);
+	std::string getDeviceDetail(int deviceId, int offset);
+	void setDeviceId(int deviceId, int offset);
 
 	std::vector<int> getSampleRates();
 	void setSampleRate(int sampleRate);
@@ -62,4 +67,5 @@ struct AudioIO {
 };
 
 
+} // namespace audio
 } // namespace rack

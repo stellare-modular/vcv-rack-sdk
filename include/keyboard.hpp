@@ -1,35 +1,19 @@
 #pragma once
-
-#include "util/common.hpp"
-#include "midi.hpp"
-#include <map>
+#include <common.hpp>
 
 
 namespace rack {
 
 
-struct KeyboardInputDevice : MidiInputDevice {
-	int octave = 5;
-	std::map<int, int> pressedNotes;
-	void onKeyPress(int key);
-	void onKeyRelease(int key);
-};
+/** Computer keyboard MIDI driver
+*/
+namespace keyboard {
 
 
-struct KeyboardDriver : MidiDriver {
-	KeyboardInputDevice device;
-	std::string getName() override {return "Computer keyboard";}
-
-	std::vector<int> getInputDeviceIds() override;
-	std::string getInputDeviceName(int deviceId) override;
-	MidiInputDevice *subscribeInputDevice(int deviceId, MidiInput *midiInput) override;
-	void unsubscribeInputDevice(int deviceId, MidiInput *midiInput) override;
-};
+void init();
+void press(int key);
+void release(int key);
 
 
-void keyboardInit();
-void keyboardPress(int key);
-void keyboardRelease(int key);
-
-
+} // namespace keyboard
 } // namespace rack

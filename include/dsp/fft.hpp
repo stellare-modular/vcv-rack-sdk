@@ -1,63 +1,127 @@
 #pragma once
-
-#include <complex>
+#include <dsp/common.hpp>
+#include <pffft.h>
 
 
 namespace rack {
+namespace dsp {
 
-/** Simple FFT implementation
-If you need something fast, use pffft, KissFFT, etc instead.
-The size N must be a power of 2
+
+/** Real-valued FFT context.
+Wrapper for [PFFFT](https://bitbucket.org/jpommier/pffft/)
+`length` must be a multiple of 32.
+Buffers must be aligned to 16-byte boundaries. new[] and malloc() do this for you.
 */
-struct SimpleFFT {
-	int N;
-	/** Twiddle factors e^(2pi k/N), interleaved complex numbers */
-	std::complex<float> *tw;
-	SimpleFFT(int N, bool inverse) : N(N) {
-		tw = new std::complex<float>[N];
-		for (int i = 0; i < N; i++) {
-			float phase = 2*M_PI * (float)i / N;
-			if (inverse)
-				phase *= -1.0;
-			tw[i] = std::exp(std::complex<float>(0.0, phase));
-		}
+struct RealFFT {
+	PFFFT_Setup *setup;
+	int length;
+
+	RealFFT(size_t length) {
+		this->length = length;
+		setup = pffft_new_setup(length, PFFFT_REAL);
 	}
-	~SimpleFFT() {
-		delete[] tw;
+
+	~RealFFT() {
+		pffft_destroy_setup(setup);
 	}
-	/** Reference naive implementation
-	x and y are arrays of interleaved complex numbers
-	y must be size N/s
-	s is the stride factor for the x array which divides the size N
+
+	/** Performs the real FFT.
+	Input and output must be aligned using the above align*() functions.
+	Input is `length` elements. Output is `2*length` elements.
+	Output is arbitrarily ordered for performance reasons.
+	However, this ordering is consistent, so element-wise multiplication with line up with other results, and the inverse FFT will return a correctly ordered result.
 	*/
-	void dft(const std::complex<float> *x, std::complex<float> *y, int s=1) {
-		for (int k = 0; k < N/s; k++) {
-			std::complex<float> yk = 0.0;
-			for (int n = 0; n < N; n += s) {
-				int m = (n*k) % N;
-				yk += x[n] * tw[m];
-			}
-			y[k] = yk;
-		}
+	void rfftUnordered(const float *input, float *output) {
+		pffft_transform(setup, input, output, NULL, PFFFT_FORWARD);
 	}
-	void fft(const std::complex<float> *x, std::complex<float> *y, int s=1) {
-		if (N/s <= 2) {
-			// Naive DFT is faster than further FFT recursions at this point
-			dft(x, y, s);
-			return;
+
+	/** Performs the inverse real FFT.
+	Input is `2*length` elements. Output is `length` elements.
+	Scaling is such that IRFFT(RFFT(x)) = N*x.
+	*/
+	void irfftUnordered(const float *input, float *output) {
+		pffft_transform(setup, input, output, NULL, PFFFT_BACKWARD);
+	}
+
+	/** Slower than the above methods, but returns results in the "canonical" FFT order as follows.
+		output[0] = F(0)
+		output[1] = F(n/2)
+		output[2] = real(F(1))
+		output[3] = imag(F(1))
+		output[4] = real(F(2))
+		output[5] = imag(F(2))
+		...
+		output[length - 2] = real(F(n/2 - 1))
+		output[length - 1] = imag(F(n/2 - 1))
+	*/
+	void rfft(const float *input, float *output) {
+		pffft_transform_ordered(setup, input, output, NULL, PFFFT_FORWARD);
+	}
+
+	void irfft(const float *input, float *output) {
+		pffft_transform_ordered(setup, input, output, NULL, PFFFT_BACKWARD);
+	}
+
+	/** Scales the RFFT so that `scale(IFFT(FFT(x))) = x`.
+	*/
+	void scale(float *x) {
+		float a = 1.f / length;
+		for (int i = 0; i < length; i++) {
+			x[i] *= a;
 		}
-		std::complex<float> *e = new std::complex<float>[N/(2*s)]; // Even inputs
-		std::complex<float> *o = new std::complex<float>[N/(2*s)]; // Odd inputs
-		fft(x, e, 2*s);
-		fft(x + s, o, 2*s);
-		for (int k = 0; k < N/(2*s); k++) {
-			int m = (k*s) % N;
-			y[k] = e[k] + tw[m] * o[k];
-			y[k + N/(2*s)] = e[k] - tw[m] * o[k];
-		}
-		delete[] e;
-		delete[] o;
 	}
 };
 
+
+/** Complex-valued FFT context.
+`length` must be a multiple of 16.
+*/
+struct ComplexFFT {
+	PFFFT_Setup *setup;
+	int length;
+
+	ComplexFFT(size_t length) {
+		this->length = length;
+		setup = pffft_new_setup(length, PFFFT_COMPLEX);
+	}
+
+	~ComplexFFT() {
+		pffft_destroy_setup(setup);
+	}
+
+	/** Performs the complex FFT.
+	Input and output must be aligned using the above align*() functions.
+	Input is `2*length` elements. Output is `2*length` elements.
+	*/
+	void fftUnordered(const float *input, float *output) {
+		pffft_transform(setup, input, output, NULL, PFFFT_FORWARD);
+	}
+
+	/** Performs the inverse complex FFT.
+	Input is `2*length` elements. Output is `2*length` elements.
+	Scaling is such that FFT(IFFT(x)) = N*x.
+	*/
+	void ifftUnordered(const float *input, float *output) {
+		pffft_transform(setup, input, output, NULL, PFFFT_BACKWARD);
+	}
+
+	void fft(const float *input, float *output) {
+		pffft_transform_ordered(setup, input, output, NULL, PFFFT_FORWARD);
+	}
+
+	void ifft(const float *input, float *output) {
+		pffft_transform_ordered(setup, input, output, NULL, PFFFT_BACKWARD);
+	}
+
+	void scale(float *x) {
+		float a = 1.f / length;
+		for (int i = 0; i < length; i++) {
+			x[2*i+0] *= a;
+			x[2*i+1] *= a;
+		}
+	}
+};
+
+
+} // namespace dsp
 } // namespace rack

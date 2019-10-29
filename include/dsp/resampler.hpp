@@ -1,19 +1,22 @@
 #pragma once
-
+#include <dsp/common.hpp>
+#include <dsp/ringbuffer.hpp>
+#include <dsp/fir.hpp>
+#include <dsp/window.hpp>
 #include <assert.h>
 #include <string.h>
 #include <speex/speex_resampler.h>
-#include "frame.hpp"
-#include "ringbuffer.hpp"
-#include "fir.hpp"
 
 
 namespace rack {
+namespace dsp {
 
-template<int CHANNELS>
+
+/** Resamples by a fixed rational factor. */
+template <int MAX_CHANNELS>
 struct SampleRateConverter {
 	SpeexResamplerState *st = NULL;
-	int channels = CHANNELS;
+	int channels = MAX_CHANNELS;
 	int quality = SPEEX_RESAMPLER_QUALITY_DEFAULT;
 	int inRate = 44100;
 	int outRate = 44100;
@@ -27,9 +30,9 @@ struct SampleRateConverter {
 		}
 	}
 
-	/** Sets the number of channels to actually process. This can be at most CHANNELS. */
+	/** Sets the number of channels to actually process. This can be at most MAX_CHANNELS. */
 	void setChannels(int channels) {
-		assert(channels <= CHANNELS);
+		assert(channels <= MAX_CHANNELS);
 		if (channels == this->channels)
 			return;
 		this->channels = channels;
@@ -64,13 +67,13 @@ struct SampleRateConverter {
 			assert(st);
 			assert(err == RESAMPLER_ERR_SUCCESS);
 
-			speex_resampler_set_input_stride(st, CHANNELS);
-			speex_resampler_set_output_stride(st, CHANNELS);
+			speex_resampler_set_input_stride(st, MAX_CHANNELS);
+			speex_resampler_set_output_stride(st, MAX_CHANNELS);
 		}
 	}
 
 	/** `in` and `out` are interlaced with the number of channels */
-	void process(const Frame<CHANNELS> *in, int *inFrames, Frame<CHANNELS> *out, int *outFrames) {
+	void process(const Frame<MAX_CHANNELS> *in, int *inFrames, Frame<MAX_CHANNELS> *out, int *outFrames) {
 		assert(in);
 		assert(inFrames);
 		assert(out);
@@ -90,8 +93,8 @@ struct SampleRateConverter {
 		}
 		else {
 			// Simply copy the buffer without conversion
-			int frames = min(*inFrames, *outFrames);
-			memcpy(out, in, frames * sizeof(Frame<CHANNELS>));
+			int frames = std::min(*inFrames, *outFrames);
+			std::memcpy(out, in, frames * sizeof(Frame<MAX_CHANNELS>));
 			*inFrames = frames;
 			*outFrames = frames;
 		}
@@ -99,7 +102,8 @@ struct SampleRateConverter {
 };
 
 
-template<int OVERSAMPLE, int QUALITY>
+/** Downsamples by an integer factor. */
+template <int OVERSAMPLE, int QUALITY>
 struct Decimator {
 	float inBuffer[OVERSAMPLE*QUALITY];
 	float kernel[OVERSAMPLE*QUALITY];
@@ -112,12 +116,12 @@ struct Decimator {
 	}
 	void reset() {
 		inIndex = 0;
-		memset(inBuffer, 0, sizeof(inBuffer));
+		std::memset(inBuffer, 0, sizeof(inBuffer));
 	}
 	/** `in` must be length OVERSAMPLE */
 	float process(float *in) {
 		// Copy input to buffer
-		memcpy(&inBuffer[inIndex], in, OVERSAMPLE*sizeof(float));
+		std::memcpy(&inBuffer[inIndex], in, OVERSAMPLE*sizeof(float));
 		// Advance index
 		inIndex += OVERSAMPLE;
 		inIndex %= OVERSAMPLE*QUALITY;
@@ -133,7 +137,8 @@ struct Decimator {
 };
 
 
-template<int OVERSAMPLE, int QUALITY>
+/** Upsamples by an integer factor. */
+template <int OVERSAMPLE, int QUALITY>
 struct Upsampler {
 	float inBuffer[QUALITY];
 	float kernel[OVERSAMPLE*QUALITY];
@@ -146,7 +151,7 @@ struct Upsampler {
 	}
 	void reset() {
 		inIndex = 0;
-		memset(inBuffer, 0, sizeof(inBuffer));
+		std::memset(inBuffer, 0, sizeof(inBuffer));
 	}
 	/** `out` must be length OVERSAMPLE */
 	void process(float in, float *out) {
@@ -171,4 +176,5 @@ struct Upsampler {
 };
 
 
+} // namespace dsp
 } // namespace rack

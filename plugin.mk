@@ -2,16 +2,20 @@ ifndef RACK_DIR
 $(error RACK_DIR is not defined)
 endif
 
+SLUG := $(shell jq .slug plugin.json)
+VERSION := $(shell jq .version plugin.json)
+
 ifndef SLUG
-$(error SLUG is not defined)
+$(error SLUG could not be found in manifest)
+endif
+ifndef VERSION
+$(error VERSION could not be found in manifest)
 endif
 
-STRIP ?= strip
+DISTRIBUTABLES += plugin.json
 
-FLAGS += -DSLUG=$(SLUG)
 FLAGS += -fPIC
 FLAGS += -I$(RACK_DIR)/include -I$(RACK_DIR)/dep/include
-
 
 include $(RACK_DIR)/arch.mk
 
@@ -19,6 +23,8 @@ ifdef ARCH_LIN
 	LDFLAGS += -shared
 	TARGET := plugin.so
 	RACK_USER_DIR ?= $(HOME)/.Rack
+	# Link to glibc 2.23
+# 	FLAGS += -include force_link_glibc_2.23.h
 endif
 
 ifdef ARCH_MAC
@@ -30,7 +36,7 @@ endif
 ifdef ARCH_WIN
 	LDFLAGS += -shared -L$(RACK_DIR) -lRack
 	TARGET := plugin.dll
-	RACK_USER_DIR ?= $(USERPROFILE)/Documents/Rack
+	RACK_USER_DIR ?= "$(USERPROFILE)"/Documents/Rack
 endif
 
 
@@ -56,12 +62,16 @@ else
 	$(STRIP) -s dist/$(SLUG)/$(TARGET)
 endif
 	@# Copy distributables
-	cp -R $(DISTRIBUTABLES) dist/$(SLUG)/
+ifdef ARCH_MAC
+	rsync -rR $(DISTRIBUTABLES) dist/$(SLUG)/
+else
+	cp -r --parents $(DISTRIBUTABLES) dist/$(SLUG)/
+endif
 	@# Create ZIP package
-	cd dist && zip -5 -r $(SLUG)-$(VERSION)-$(ARCH).zip $(SLUG)
+	cd dist && zip -q -9 -r $(SLUG)-$(VERSION)-$(ARCH).zip $(SLUG)
 
 install: dist
-	cp dist/$(SLUG)-$(VERSION)-$(ARCH).zip $(RACK_USER_DIR)/plugins/
+	cp dist/$(SLUG)-$(VERSION)-$(ARCH).zip $(RACK_USER_DIR)/plugins-v1/
 
 .PHONY: clean dist
 .DEFAULT_GOAL := all
