@@ -1,8 +1,9 @@
 include $(RACK_DIR)/arch.mk
 
 # The install location for `make install`
-DEP_LOCAL ?= .
-DEP_PATH := $(shell pwd)/$(DEP_LOCAL)
+DEP_LOCAL ?= dep
+$(shell mkdir -p $(DEP_LOCAL))
+DEP_PATH := $(abspath $(DEP_LOCAL))
 
 DEP_FLAGS += -g -O3 -march=nocona
 
@@ -19,7 +20,8 @@ DEP_CXXFLAGS += $(DEP_FLAGS)
 WGET := wget -c
 UNTAR := tar xf
 UNZIP := unzip -o
-CONFIGURE := ./configure --prefix="$(DEP_PATH)"
+CONFIGURE := ./configure --prefix="$(DEP_PATH)" --host=$(MACHINE)
+
 ifdef ARCH_WIN
 	CMAKE := cmake -G 'MSYS Makefiles' -DCMAKE_INSTALL_PREFIX="$(DEP_PATH)"
 else
@@ -44,9 +46,10 @@ $(DEPS): export LDFLAGS = $(DEP_LDFLAGS)
 
 dep: $(DEPS)
 
-$(DEPS): | dep_create_dir
-
-dep_create_dir:
-	mkdir -p $(DEP_LOCAL)
+cleandep:
+ifeq ($(DEP_LOCAL), .)
+	$(error Refusing to clean cwd)
+endif
+	rm -rfv $(DEP_LOCAL)
 
 .PHONY: dep

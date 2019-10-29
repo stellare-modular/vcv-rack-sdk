@@ -34,19 +34,16 @@ extern int threadCount;
 extern bool paramTooltip;
 extern bool cpuMeter;
 extern bool lockModules;
-extern float frameRateLimit;
-extern bool frameRateSync;
+extern int frameSwapInterval;
 extern float autosavePeriod;
 extern bool skipLoadOnLaunch;
 extern std::string patchPath;
-// (plugin, model) -> score
-extern std::map<std::tuple<std::string, std::string>, float> favoriteScores;
 extern std::vector<NVGcolor> cableColors;
 
-json_t *toJson();
-void fromJson(json_t *rootJ);
-void save(const std::string &path);
-void load(const std::string &path);
+json_t* toJson();
+void fromJson(json_t* rootJ);
+void save(const std::string& path);
+void load(const std::string& path);
 
 
 } // namespace settings

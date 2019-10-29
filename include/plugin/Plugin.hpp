@@ -18,7 +18,7 @@ struct Plugin {
 	/** The file path to the plugin's directory */
 	std::string path;
 	/** OS-dependent library handle */
-	void *handle = NULL;
+	void* handle = NULL;
 
 	/** Must be unique. Used for saving patches. Never change this after releasing your plugin.
 	To guarantee uniqueness, it is a good idea to prefix the slug by your "company name" if available, e.g. "MyCompany-MyPlugin"
@@ -43,13 +43,13 @@ struct Plugin {
 	/** Your email address for support inquiries.
 	*/
 	std::string authorEmail;
-	/** Homepage featuring the plugin itself.
+	/** Homepage of the author.
 	*/
 	std::string authorUrl;
-	/** The manual of your plugin. HTML, PDF, or GitHub readme/wiki are fine.
+	/** Homepage featuring the plugin itself.
 	*/
 	std::string pluginUrl;
-	/** Homepage of the author.
+	/** The manual of your plugin. HTML, PDF, or GitHub readme/wiki are fine.
 	*/
 	std::string manualUrl;
 	/** The source code homepage. E.g. GitHub repo.
@@ -58,11 +58,14 @@ struct Plugin {
 	/** Link to donation page for users who wish to donate. E.g. PayPal URL.
 	*/
 	std::string donateUrl;
+	/** Last modified timestamp of the plugin directory.
+	*/
+	double modifiedTimestamp = -INFINITY;
 
 	~Plugin();
-	void addModel(Model *model);
-	Model *getModel(std::string slug);
-	void fromJson(json_t *rootJ);
+	void addModel(Model* model);
+	Model* getModel(std::string slug);
+	void fromJson(json_t* rootJ);
 };
 
 
