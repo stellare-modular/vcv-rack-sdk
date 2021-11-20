@@ -7,7 +7,8 @@ namespace rack {
 namespace app {
 
 
-widget::Widget* browserCreate();
+PRIVATE void browserInit();
+PRIVATE widget::Widget* browserCreate();
 
 
 } // namespace app

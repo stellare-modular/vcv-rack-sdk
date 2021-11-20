@@ -19,7 +19,7 @@ struct Module;
 namespace asset {
 
 
-void init();
+PRIVATE void init();
 
 /** Returns the path of a system asset. Read-only files. */
 std::string system(std::string filename = "");

@@ -17,19 +17,19 @@ struct UpdateInfo {
 };
 
 
-void init();
-void destroy();
+PRIVATE void init();
+PRIVATE void destroy();
 
-void checkAppUpdate();
+PRIVATE void checkAppUpdate();
 bool isAppUpdateAvailable();
 
 bool isLoggedIn();
-void logIn(const std::string& email, const std::string& password);
-void logOut();
-void checkUpdates();
-bool hasUpdates();
-void syncUpdate(const std::string& slug);
-void syncUpdates();
+PRIVATE void logIn(std::string email, std::string password);
+PRIVATE void logOut();
+PRIVATE void checkUpdates();
+PRIVATE bool hasUpdates();
+PRIVATE void syncUpdate(std::string slug);
+PRIVATE void syncUpdates();
 
 
 extern std::string appVersion;
@@ -46,6 +46,8 @@ extern float updateProgress;
 extern bool isSyncing;
 /** Whether the UI should ask the user to restart after updating plugins. */
 extern bool restartRequested;
+/** Whether the UI should refresh the plugin updates menu. */
+extern bool refreshRequested;
 
 
 } // namespace library

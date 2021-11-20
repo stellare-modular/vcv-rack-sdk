@@ -148,7 +148,7 @@ inline float chop(float x, float epsilon = 1e-6f) {
 
 /** Rescales `x` from the range `[xMin, xMax]` to `[yMin, yMax]`.
 */
-inline float rescale(float x, float xMin, float xMax, float yMin = 0.f, float yMax = 1.f) {
+inline float rescale(float x, float xMin, float xMax, float yMin, float yMax) {
 	return yMin + (x - xMin) / (xMax - xMin) * (yMax - yMin);
 }
 
@@ -426,6 +426,10 @@ struct Rect {
 		r.pos = pos.plus(delta);
 		r.size = size.minus(delta.mult(2.f));
 		return r;
+	}
+	/** Returns `pos + size * p` */
+	Vec interpolate(Vec p) {
+		return pos.plus(size.mult(p));
 	}
 
 	// Method aliases

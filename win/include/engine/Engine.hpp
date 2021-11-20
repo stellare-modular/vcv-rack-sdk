@@ -23,14 +23,14 @@ struct Engine {
 	struct Internal;
 	Internal* internal;
 
-	Engine();
-	~Engine();
+	PRIVATE Engine();
+	PRIVATE ~Engine();
 
 	/** Removes all modules and cables.
 	Write-locks.
 	*/
 	void clear();
-	INTERNAL void clear_NoLock();
+	PRIVATE void clear_NoLock();
 	/** Advances the engine by `frames` frames.
 	Only call this method from the master module.
 	Read-locks. Also locks so only one stepBlock() can be called simultaneously or recursively.
@@ -42,7 +42,7 @@ struct Engine {
 	Write-locks.
 	*/
 	void setMasterModule(Module* module);
-	INTERNAL void setMasterModule_NoLock(Module* module);
+	PRIVATE void setMasterModule_NoLock(Module* module);
 	Module* getMasterModule();
 
 	/** Returns the sample rate used by the engine for stepping each module.
@@ -51,7 +51,7 @@ struct Engine {
 	/** Sets the sample rate to step the modules.
 	Write-locks.
 	*/
-	INTERNAL void setSampleRate(float sampleRate);
+	PRIVATE void setSampleRate(float sampleRate);
 	/** Sets the sample rate if the sample rate in the settings is "Auto".
 	Write-locks.
 	*/
@@ -116,7 +116,7 @@ struct Engine {
 	Write-locks.
 	*/
 	void removeModule(Module* module);
-	INTERNAL void removeModule_NoLock(Module* module);
+	PRIVATE void removeModule_NoLock(Module* module);
 	/** Checks whether a Module is in the rack.
 	Read-locks.
 	*/
@@ -125,6 +125,7 @@ struct Engine {
 	Read-locks.
 	*/
 	Module* getModule(int64_t moduleId);
+	Module* getModule_NoLock(int64_t moduleId);
 	/** Triggers a ResetEvent for the given Module.
 	Write-locks.
 	*/
@@ -173,7 +174,7 @@ struct Engine {
 	Write-locks.
 	*/
 	void removeCable(Cable* cable);
-	INTERNAL void removeCable_NoLock(Cable* cable);
+	PRIVATE void removeCable_NoLock(Cable* cable);
 	/** Checks whether a Cable is in the rack.
 	Read-locks.
 	*/
@@ -203,20 +204,22 @@ struct Engine {
 	Write-locks.
 	*/
 	void removeParamHandle(ParamHandle* paramHandle);
-	INTERNAL void removeParamHandle_NoLock(ParamHandle* paramHandle);
+	PRIVATE void removeParamHandle_NoLock(ParamHandle* paramHandle);
 	/** Returns the unique ParamHandle for the given paramId
 	Read-locks.
 	*/
 	ParamHandle* getParamHandle(int64_t moduleId, int paramId);
+	ParamHandle* getParamHandle_NoLock(int64_t moduleId, int paramId);
 	/** Use getParamHandle(moduleId, paramId) instead.
 	Read-locks.
 	*/
 	DEPRECATED ParamHandle* getParamHandle(Module* module, int paramId);
 	/** Sets the ParamHandle IDs and module pointer.
 	If `overwrite` is true and another ParamHandle points to the same param, unsets that one and replaces it with the given handle.
-	Read-locks.
+	Write-locks.
 	*/
 	void updateParamHandle(ParamHandle* paramHandle, int64_t moduleId, int paramId, bool overwrite = true);
+	void updateParamHandle_NoLock(ParamHandle* paramHandle, int64_t moduleId, int paramId, bool overwrite = true);
 
 	/** Serializes the rack.
 	Read-locks.
@@ -229,7 +232,7 @@ struct Engine {
 
 	/** If no master module is set, the fallback Engine thread will step blocks, using the CPU clock for timing.
 	*/
-	void startFallbackThread();
+	PRIVATE void startFallbackThread();
 };
 
 

@@ -6,6 +6,19 @@ The following headers are the "public" API of Rack.
 Directly including Rack headers other than rack.hpp in your plugin is unsupported/unstable, since filenames and locations of symbols may change in any Rack version.
 */
 
+#ifdef PRIVATE
+#warning "Plugins must only include rack.hpp. Including other Rack headers is unsupported."
+#endif
+
+/** Functions with the PRIVATE attribute should not be called by plugins.
+*/
+#ifdef __clang__
+#define PRIVATE __attribute__((deprecated("Using internal Rack function or symbol")))
+#else
+#define PRIVATE __attribute__((error("Using internal Rack function or symbol")))
+#endif
+
+
 #include <common.hpp>
 #include <math.hpp>
 #include <string.hpp>
@@ -51,13 +64,12 @@ Directly including Rack headers other than rack.hpp in your plugin is unsupporte
 #include <ui/RadioButton.hpp>
 #include <ui/Menu.hpp>
 #include <ui/ScrollWidget.hpp>
-#include <ui/PasswordField.hpp>
 
 #include <app/SliderKnob.hpp>
 #include <app/MultiLightWidget.hpp>
-#include <app/MidiWidget.hpp>
+#include <app/MidiDisplay.hpp>
 #include <app/CircularShadow.hpp>
-#include <app/AudioWidget.hpp>
+#include <app/AudioDisplay.hpp>
 #include <app/LedDisplay.hpp>
 #include <app/ModuleLightWidget.hpp>
 #include <app/LightWidget.hpp>
@@ -94,6 +106,7 @@ Directly including Rack headers other than rack.hpp in your plugin is unsupporte
 #include <plugin/Model.hpp>
 #include <plugin/callbacks.hpp>
 
+#include <dsp/common.hpp>
 #include <dsp/window.hpp>
 #include <dsp/ode.hpp>
 #include <dsp/minblep.hpp>
@@ -106,18 +119,10 @@ Directly including Rack headers other than rack.hpp in your plugin is unsupporte
 #include <dsp/vumeter.hpp>
 #include <dsp/filter.hpp>
 #include <dsp/digital.hpp>
-#include <dsp/common.hpp>
+#include <dsp/convert.hpp>
 
 #include <simd/Vector.hpp>
 #include <simd/functions.hpp>
-
-
-#undef INTERNAL
-#if defined ARCH_WIN
-	#define INTERNAL __attribute__((error("Using internal Rack function or symbol")))
-#else
-	#define INTERNAL __attribute__((visibility("hidden"))) __attribute__((error("Using internal Rack function or symbol")))
-#endif
 
 
 namespace rack {

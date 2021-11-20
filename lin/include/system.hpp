@@ -36,6 +36,7 @@ Returns whether the rename was successful.
 */
 bool rename(const std::string& srcPath, const std::string& destPath);
 /** Copies a file or directory recursively.
+Overwrites destination if already exists.
 Returns whether the copy was successful.
 */
 bool copy(const std::string& srcPath, const std::string& destPath);
@@ -48,6 +49,7 @@ bool createDirectory(const std::string& path);
 Returns whether the creation was successful.
 */
 bool createDirectories(const std::string& path);
+bool createSymbolicLink(const std::string& target, const std::string& link);
 /** Deletes a file or empty directory.
 Returns whether the deletion was successful.
 */
@@ -123,6 +125,10 @@ void writeFile(const std::string& path, const std::vector<uint8_t>& data);
 Uses the Unix Standard TAR + Zstandard format (.tar.zst).
 An equivalent shell command is
 
+	tar -c -C dirPath . | zstd -1 -o archivePath
+
+or
+
 	ZSTD_CLEVEL=1 tar -cf archivePath --zstd -C dirPath .
 
 Throws on error.
@@ -132,6 +138,10 @@ std::vector<uint8_t> archiveDirectory(const std::string& dirPath, int compressio
 
 /** Extracts an archive into a directory.
 An equivalent shell command is
+
+	zstd -d < archivePath | tar -x -C dirPath
+
+or
 
 	tar -xf archivePath --zstd -C dirPath
 
@@ -180,7 +190,7 @@ The launched process will continue running if the current process is closed.
 */
 void runProcessDetached(const std::string& path);
 
-void init();
+PRIVATE void init();
 
 
 } // namespace system

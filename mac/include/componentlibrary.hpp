@@ -7,8 +7,8 @@
 #include <app/ModuleLightWidget.hpp>
 #include <app/SvgSwitch.hpp>
 #include <app/SvgScrew.hpp>
-#include <app/AudioWidget.hpp>
-#include <app/MidiWidget.hpp>
+#include <app/AudioDisplay.hpp>
+#include <app/MidiDisplay.hpp>
 #include <asset.hpp>
 
 
@@ -33,7 +33,7 @@ static const NVGcolor SCHEME_BLACK = nvgRGB(0x00, 0x00, 0x00);
 static const NVGcolor SCHEME_WHITE = nvgRGB(0xff, 0xff, 0xff);
 static const NVGcolor SCHEME_RED = nvgRGB(0xed, 0x2c, 0x24);
 static const NVGcolor SCHEME_ORANGE = nvgRGB(0xf2, 0xb1, 0x20);
-static const NVGcolor SCHEME_YELLOW = nvgRGB(0xf9, 0xdf, 0x1c);
+static const NVGcolor SCHEME_YELLOW = nvgRGB(0xff, 0xd7, 0x14);
 static const NVGcolor SCHEME_GREEN = nvgRGB(0x90, 0xc7, 0x3e);
 static const NVGcolor SCHEME_CYAN = nvgRGB(0x22, 0xe6, 0xef);
 static const NVGcolor SCHEME_BLUE = nvgRGB(0x29, 0xb2, 0xef);
@@ -57,7 +57,7 @@ E.g. `RectangleLight<RedLight>`
 Although this paradigm might seem confusing at first, it ends up being extremely simple in your plugin code and perfect for "decorating" your classes with appearance traits and behavioral properties.
 For example, need a slider with a green LED? Just use
 
-	createLightParamCentered<LEDLightSlider<GreenLight>>(...)
+	createLightParamCentered<VCVLightSlider<GreenLight>>(...)
 */
 
 template <typename TBase = app::ModuleLightWidget>
@@ -79,7 +79,7 @@ struct TSvgLight : TBase {
 		this->box.size = sw->box.size;
 	}
 };
-typedef TSvgLight<> SvgLight;
+using SvgLight = TSvgLight<>;
 
 template <typename TBase = app::ModuleLightWidget>
 struct TGrayModuleLightWidget : TBase {
@@ -88,39 +88,7 @@ struct TGrayModuleLightWidget : TBase {
 		this->borderColor = nvgRGBA(0, 0, 0, 53);
 	}
 };
-typedef TGrayModuleLightWidget<> GrayModuleLightWidget;
-
-template <typename TBase = GrayModuleLightWidget>
-struct TRedLight : TBase {
-	TRedLight() {
-		this->addBaseColor(SCHEME_RED);
-	}
-};
-typedef TRedLight<> RedLight;
-
-template <typename TBase = GrayModuleLightWidget>
-struct TGreenLight : TBase {
-	TGreenLight() {
-		this->addBaseColor(SCHEME_GREEN);
-	}
-};
-typedef TGreenLight<> GreenLight;
-
-template <typename TBase = GrayModuleLightWidget>
-struct TYellowLight : TBase {
-	TYellowLight() {
-		this->addBaseColor(SCHEME_YELLOW);
-	}
-};
-typedef TYellowLight<> YellowLight;
-
-template <typename TBase = GrayModuleLightWidget>
-struct TBlueLight : TBase {
-	TBlueLight() {
-		this->addBaseColor(SCHEME_BLUE);
-	}
-};
-typedef TBlueLight<> BlueLight;
+using GrayModuleLightWidget = TGrayModuleLightWidget<>;
 
 template <typename TBase = GrayModuleLightWidget>
 struct TWhiteLight : TBase {
@@ -128,7 +96,39 @@ struct TWhiteLight : TBase {
 		this->addBaseColor(SCHEME_WHITE);
 	}
 };
-typedef TWhiteLight<> WhiteLight;
+using WhiteLight = TWhiteLight<>;
+
+template <typename TBase = GrayModuleLightWidget>
+struct TRedLight : TBase {
+	TRedLight() {
+		this->addBaseColor(SCHEME_RED);
+	}
+};
+using RedLight = TRedLight<>;
+
+template <typename TBase = GrayModuleLightWidget>
+struct TGreenLight : TBase {
+	TGreenLight() {
+		this->addBaseColor(SCHEME_GREEN);
+	}
+};
+using GreenLight = TGreenLight<>;
+
+template <typename TBase = GrayModuleLightWidget>
+struct TBlueLight : TBase {
+	TBlueLight() {
+		this->addBaseColor(SCHEME_BLUE);
+	}
+};
+using BlueLight = TBlueLight<>;
+
+template <typename TBase = GrayModuleLightWidget>
+struct TYellowLight : TBase {
+	TYellowLight() {
+		this->addBaseColor(SCHEME_YELLOW);
+	}
+};
+using YellowLight = TYellowLight<>;
 
 /** Reads two adjacent lightIds, so `lightId` and `lightId + 1` must be defined */
 template <typename TBase = GrayModuleLightWidget>
@@ -138,7 +138,7 @@ struct TGreenRedLight : TBase {
 		this->addBaseColor(SCHEME_RED);
 	}
 };
-typedef TGreenRedLight<> GreenRedLight;
+using GreenRedLight = TGreenRedLight<>;
 
 template <typename TBase = GrayModuleLightWidget>
 struct TRedGreenBlueLight : TBase {
@@ -148,7 +148,7 @@ struct TRedGreenBlueLight : TBase {
 		this->addBaseColor(SCHEME_BLUE);
 	}
 };
-typedef TRedGreenBlueLight<> RedGreenBlueLight;
+using RedGreenBlueLight = TRedGreenBlueLight<>;
 
 /** Based on the size of 5mm LEDs */
 template <typename TBase>
@@ -179,6 +179,38 @@ template <typename TBase>
 struct TinyLight : TSvgLight<TBase> {
 	TinyLight() {
 		this->setSvg(Svg::load(asset::system("res/ComponentLibrary/TinyLight.svg")));
+	}
+};
+
+/** Based on the size of 5mm LEDs */
+template <typename TBase = GrayModuleLightWidget>
+struct LargeSimpleLight : TBase {
+	LargeSimpleLight() {
+		this->box.size = mm2px(math::Vec(5, 5));
+	}
+};
+
+/** Based on the size of 3mm LEDs */
+template <typename TBase = GrayModuleLightWidget>
+struct MediumSimpleLight : TBase {
+	MediumSimpleLight() {
+		this->box.size = mm2px(math::Vec(3, 3));
+	}
+};
+
+/** Based on the size of 2mm LEDs */
+template <typename TBase = GrayModuleLightWidget>
+struct SmallSimpleLight : TBase {
+	SmallSimpleLight() {
+		this->box.size = mm2px(math::Vec(2, 2));
+	}
+};
+
+/** Based on the size of 1mm LEDs */
+template <typename TBase = GrayModuleLightWidget>
+struct TinySimpleLight : TBase {
+	TinySimpleLight() {
+		this->box.size = mm2px(math::Vec(1, 1));
 	}
 };
 
@@ -218,18 +250,19 @@ struct RectangleLight : TBase {
 	}
 };
 
-/** A light for displaying on top of PB61303. Must add a color by subclassing or templating. */
+/** A light for displaying on top of VCVBezel. Must add a color by subclassing or templating. */
 template <typename TBase>
-struct LEDBezelLight : TBase {
-	LEDBezelLight() {
+struct VCVBezelLight : TBase {
+	VCVBezelLight() {
 		this->borderColor = color::BLACK_TRANSPARENT;
 		this->bgColor = color::BLACK_TRANSPARENT;
 		this->box.size = math::Vec(17.545, 17.545);
 	}
 };
+template <typename TBase>
+using LEDBezelLight = VCVBezelLight<TBase>;
 
 /** A light to displayed over PB61303. Must add a color by subclassing or templating.
-Don't add this as a child of the PB61303 itself. Instead, just place it over it as a sibling in the scene graph, offset by mm2px(math::Vec(0.5, 0.5)).
 */
 template <typename TBase>
 struct PB61303Light : TBase {
@@ -259,35 +292,35 @@ struct RoundKnob : app::SvgKnob {
 struct RoundBlackKnob : RoundKnob {
 	RoundBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBlackKnob.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBlackKnob-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBlackKnob_bg.svg")));
 	}
 };
 
 struct RoundSmallBlackKnob : RoundKnob {
 	RoundSmallBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundSmallBlackKnob.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundSmallBlackKnob-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundSmallBlackKnob_bg.svg")));
 	}
 };
 
 struct RoundLargeBlackKnob : RoundKnob {
 	RoundLargeBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundLargeBlackKnob.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundLargeBlackKnob-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundLargeBlackKnob_bg.svg")));
 	}
 };
 
 struct RoundBigBlackKnob : RoundKnob {
 	RoundBigBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBigBlackKnob.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBigBlackKnob-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundBigBlackKnob_bg.svg")));
 	}
 };
 
 struct RoundHugeBlackKnob : RoundKnob {
 	RoundHugeBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundHugeBlackKnob.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundHugeBlackKnob-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/RoundHugeBlackKnob_bg.svg")));
 	}
 };
 
@@ -299,45 +332,56 @@ struct RoundBlackSnapKnob : RoundBlackKnob {
 
 
 struct Davies1900hKnob : app::SvgKnob {
+	widget::SvgWidget* bg;
+
 	Davies1900hKnob() {
 		minAngle = -0.83 * M_PI;
 		maxAngle = 0.83 * M_PI;
+
+		bg = new widget::SvgWidget;
+		fb->addChildBelow(bg, tw);
 	}
 };
 
 struct Davies1900hWhiteKnob : Davies1900hKnob {
 	Davies1900hWhiteKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hWhite.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hWhite_bg.svg")));
 	}
 };
 
 struct Davies1900hBlackKnob : Davies1900hKnob {
 	Davies1900hBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hBlack.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hBlack_bg.svg")));
 	}
 };
 
 struct Davies1900hRedKnob : Davies1900hKnob {
 	Davies1900hRedKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hRed.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hRed_bg.svg")));
 	}
 };
 
 struct Davies1900hLargeWhiteKnob : Davies1900hKnob {
 	Davies1900hLargeWhiteKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeWhite.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeWhite_bg.svg")));
 	}
 };
 
 struct Davies1900hLargeBlackKnob : Davies1900hKnob {
 	Davies1900hLargeBlackKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeBlack.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeBlack_bg.svg")));
 	}
 };
 
 struct Davies1900hLargeRedKnob : Davies1900hKnob {
 	Davies1900hLargeRedKnob() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeRed.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Davies1900hLargeRed_bg.svg")));
 	}
 };
 
@@ -361,231 +405,232 @@ struct Rogan : app::SvgKnob {
 struct Rogan6PSWhite : Rogan {
 	Rogan6PSWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan6PSWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan6PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan6PSWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan6PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan6PSWhite_fg.svg")));
 	}
 };
 
 struct Rogan5PSGray : Rogan {
 	Rogan5PSGray() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan5PSGray.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan5PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan5PSGray-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan5PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan5PSGray_fg.svg")));
 	}
 };
 
 struct Rogan3PSBlue : Rogan {
 	Rogan3PSBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSBlue_fg.svg")));
 	}
 };
 
 struct Rogan3PSRed : Rogan {
 	Rogan3PSRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSRed_fg.svg")));
 	}
 };
 
 struct Rogan3PSGreen : Rogan {
 	Rogan3PSGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSGreen_fg.svg")));
 	}
 };
 
 struct Rogan3PSWhite : Rogan {
 	Rogan3PSWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PSWhite_fg.svg")));
 	}
 };
 
 struct Rogan3PBlue : Rogan {
 	Rogan3PBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PBlue_fg.svg")));
 	}
 };
 
 struct Rogan3PRed : Rogan {
 	Rogan3PRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PRed_fg.svg")));
 	}
 };
 
 struct Rogan3PGreen : Rogan {
 	Rogan3PGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PGreen_fg.svg")));
 	}
 };
 
 struct Rogan3PWhite : Rogan {
 	Rogan3PWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan3PWhite_fg.svg")));
 	}
 };
 
 struct Rogan2SGray : Rogan {
 	Rogan2SGray() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2SGray.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2S-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2SGray-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2S_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2SGray_fg.svg")));
 	}
 };
 
 struct Rogan2PSBlue : Rogan {
 	Rogan2PSBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSBlue_fg.svg")));
 	}
 };
 
 struct Rogan2PSRed : Rogan {
 	Rogan2PSRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSRed_fg.svg")));
 	}
 };
 
 struct Rogan2PSGreen : Rogan {
 	Rogan2PSGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSGreen_fg.svg")));
 	}
 };
 
 struct Rogan2PSWhite : Rogan {
 	Rogan2PSWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PSWhite_fg.svg")));
 	}
 };
 
 struct Rogan2PBlue : Rogan {
 	Rogan2PBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PBlue_fg.svg")));
 	}
 };
 
 struct Rogan2PRed : Rogan {
 	Rogan2PRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PRed_fg.svg")));
 	}
 };
 
 struct Rogan2PGreen : Rogan {
 	Rogan2PGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PGreen_fg.svg")));
 	}
 };
 
 struct Rogan2PWhite : Rogan {
 	Rogan2PWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan2PWhite_fg.svg")));
 	}
 };
 
 struct Rogan1PSBlue : Rogan {
 	Rogan1PSBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSBlue_fg.svg")));
 	}
 };
 
 struct Rogan1PSRed : Rogan {
 	Rogan1PSRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSRed_fg.svg")));
 	}
 };
 
 struct Rogan1PSGreen : Rogan {
 	Rogan1PSGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSGreen_fg.svg")));
 	}
 };
 
 struct Rogan1PSWhite : Rogan {
 	Rogan1PSWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PS_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PSWhite_fg.svg")));
 	}
 };
 
 struct Rogan1PBlue : Rogan {
 	Rogan1PBlue() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PBlue.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PBlue-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PBlue_fg.svg")));
 	}
 };
 
 struct Rogan1PRed : Rogan {
 	Rogan1PRed() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PRed.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PRed-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PRed_fg.svg")));
 	}
 };
 
 struct Rogan1PGreen : Rogan {
 	Rogan1PGreen() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PGreen.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PGreen-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PGreen_fg.svg")));
 	}
 };
 
 struct Rogan1PWhite : Rogan {
 	Rogan1PWhite() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PWhite.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P-bg.svg")));
-		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PWhite-fg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1P_bg.svg")));
+		fg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Rogan1PWhite_fg.svg")));
 	}
 };
 
 
 struct SynthTechAlco : app::SvgKnob {
+	widget::SvgWidget* bg;
+
 	SynthTechAlco() {
 		minAngle = -0.82 * M_PI;
 		maxAngle = 0.82 * M_PI;
+
+		bg = new widget::SvgWidget;
+		fb->addChildBelow(bg, tw);
+
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/SynthTechAlco.svg")));
-		// Add cap
-		widget::FramebufferWidget* capFb = new widget::FramebufferWidget;
-		widget::SvgWidget* cap = new widget::SvgWidget;
-		cap->setSvg(Svg::load(asset::system("res/ComponentLibrary/SynthTechAlco_cap.svg")));
-		capFb->addChild(cap);
-		addChild(capFb);
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/SynthTechAlco_bg.svg")));
 	}
 };
 
@@ -600,29 +645,36 @@ struct Trimpot : app::SvgKnob {
 		fb->addChildBelow(bg, tw);
 
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/Trimpot.svg")));
-		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Trimpot-bg.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/Trimpot_bg.svg")));
 	}
 };
 
 struct BefacoBigKnob : app::SvgKnob {
+	widget::SvgWidget* bg;
+
 	BefacoBigKnob() {
 		minAngle = -0.75 * M_PI;
 		maxAngle = 0.75 * M_PI;
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoBigKnob.svg")));
-	}
-};
 
-struct BefacoBigSnapKnob : BefacoBigKnob {
-	BefacoBigSnapKnob() {
-		snap = true;
+		bg = new widget::SvgWidget;
+		fb->addChildBelow(bg, tw);
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoBigKnob_bg.svg")));
 	}
 };
 
 struct BefacoTinyKnob : app::SvgKnob {
+	widget::SvgWidget* bg;
+
 	BefacoTinyKnob() {
-		minAngle = -0.75 * M_PI;
-		maxAngle = 0.75 * M_PI;
-		setSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoTinyKnob.svg")));
+		minAngle = -0.8 * M_PI;
+		maxAngle = 0.8 * M_PI;
+
+		bg = new widget::SvgWidget;
+		fb->addChildBelow(bg, tw);
+
+		setSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoTinyPointBlack.svg")));
+		bg->setSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoTinyKnobWhite_bg.svg")));
 	}
 };
 
@@ -638,27 +690,33 @@ struct BefacoSlidePot : app::SvgSlider {
 	}
 };
 
-struct LEDSlider : app::SvgSlider {
-	LEDSlider() {
-		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/LEDSlider.svg")));
-		setHandleSvg(Svg::load(asset::system("res/ComponentLibrary/LEDSliderHandle.svg")));
+struct VCVSlider : app::SvgSlider {
+	VCVSlider() {
+		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSlider.svg")));
+		setHandleSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSliderHandle.svg")));
 		setHandlePosCentered(
 			math::Vec(19.84260/2, 76.53517 - 11.74218/2),
 			math::Vec(19.84260/2, 0.0 + 11.74218/2)
 		);
 	}
 };
+using LEDSlider = VCVSlider;
 
-// TODO Modernize
-struct LEDSliderHorizontal : app::SvgSlider {
-	LEDSliderHorizontal() {
+struct VCVSliderHorizontal : app::SvgSlider {
+	VCVSliderHorizontal() {
 		horizontal = true;
+		// TODO Fix positions
 		maxHandlePos = mm2px(math::Vec(22.078, 0.738).plus(math::Vec(0, 2)));
 		minHandlePos = mm2px(math::Vec(0.738, 0.738).plus(math::Vec(0, 2)));
-		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/LEDSliderHorizontal.svg")));
+		// TODO Fix SVG
+		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSliderHorizontal.svg")));
 	}
 };
+using LEDSliderHorizontal = VCVSliderHorizontal;
 
+/** An SvgSlider with an attached light.
+Construct with createLightParamCentered() helper function.
+*/
 template <typename TBase, typename TLightBase = RedLight>
 struct LightSlider : TBase {
 	app::ModuleLightWidget* light;
@@ -666,6 +724,10 @@ struct LightSlider : TBase {
 	LightSlider() {
 		light = new TLightBase;
 		this->addChild(light);
+	}
+
+	app::ModuleLightWidget* getLight() {
+		return light;
 	}
 
 	void step() override {
@@ -678,32 +740,39 @@ struct LightSlider : TBase {
 };
 
 template <typename TBase>
-struct LEDSliderLight : RectangleLight<TSvgLight<TBase>> {
-	LEDSliderLight() {
-		this->setSvg(Svg::load(asset::system("res/ComponentLibrary/LEDSliderLight.svg")));
+struct VCVSliderLight : RectangleLight<TSvgLight<TBase>> {
+	VCVSliderLight() {
+		this->setSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSliderLight.svg")));
 	}
 };
+template <typename TBase>
+using LEDSliderLight = VCVSliderLight<TBase>;
 
 template <typename TLightBase = RedLight>
-struct LEDLightSlider : LightSlider<LEDSlider, LEDSliderLight<TLightBase>> {
-	LEDLightSlider() {}
+struct VCVLightSlider : LightSlider<VCVSlider, VCVSliderLight<TLightBase>> {
+	VCVLightSlider() {}
 };
-
-/** Deprecated. Use LEDSliderLight with your preferred LightWidget. */
-struct LEDSliderGreen : LEDLightSlider<GreenLight> {};
-struct LEDSliderRed : LEDLightSlider<RedLight> {};
-struct LEDSliderYellow : LEDLightSlider<YellowLight> {};
-struct LEDSliderBlue : LEDLightSlider<BlueLight> {};
-struct LEDSliderWhite : LEDLightSlider<WhiteLight> {};
-
-// TODO Modernize
 template <typename TLightBase = RedLight>
-struct LEDLightSliderHorizontal : LightSlider<LEDSliderHorizontal, TLightBase> {
-	LEDLightSliderHorizontal() {
-		this->setHandleSvg(Svg::load(asset::system("res/ComponentLibrary/LEDSliderHorizontalHandle.svg")));
+using LEDLightSlider = VCVLightSlider<TLightBase>;
+
+/** Deprecated. Use VCVSliderLight with your preferred LightWidget. */
+struct LEDSliderGreen : VCVLightSlider<GreenLight> {};
+struct LEDSliderRed : VCVLightSlider<RedLight> {};
+struct LEDSliderYellow : VCVLightSlider<YellowLight> {};
+struct LEDSliderBlue : VCVLightSlider<BlueLight> {};
+struct LEDSliderWhite : VCVLightSlider<WhiteLight> {};
+
+template <typename TLightBase = RedLight>
+struct VCVLightSliderHorizontal : LightSlider<VCVSliderHorizontal, TLightBase> {
+	VCVLightSliderHorizontal() {
+		// TODO Fix positions
 		this->light->box.size = mm2px(math::Vec(3.276, 1.524));
+		// TODO Fix SVG
+		this->setHandleSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSliderHorizontalHandle.svg")));
 	}
 };
+template <typename TLightBase = RedLight>
+using LEDLightSliderHorizontal = VCVLightSliderHorizontal<TLightBase>;
 
 
 ////////////////////
@@ -734,13 +803,6 @@ struct CL1362Port : app::SvgPort {
 ////////////////////
 
 template <typename TSwitch>
-struct LatchingSwitch : TSwitch {
-	LatchingSwitch() {
-		this->momentary = false;
-	}
-};
-
-template <typename TSwitch>
 struct MomentarySwitch : TSwitch {
 	MomentarySwitch() {
 		this->momentary = true;
@@ -749,6 +811,7 @@ struct MomentarySwitch : TSwitch {
 
 struct NKK : app::SvgSwitch {
 	NKK() {
+		shadow->opacity = 0.0;
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/NKK_0.svg")));
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/NKK_1.svg")));
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/NKK_2.svg")));
@@ -757,6 +820,7 @@ struct NKK : app::SvgSwitch {
 
 struct CKSS : app::SvgSwitch {
 	CKSS() {
+		shadow->opacity = 0.0;
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSS_0.svg")));
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSS_1.svg")));
 	}
@@ -764,9 +828,19 @@ struct CKSS : app::SvgSwitch {
 
 struct CKSSThree : app::SvgSwitch {
 	CKSSThree() {
+		shadow->opacity = 0.0;
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThree_0.svg")));
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThree_1.svg")));
 		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThree_2.svg")));
+	}
+};
+
+struct CKSSThreeHorizontal : app::SvgSwitch {
+	CKSSThreeHorizontal() {
+		shadow->opacity = 0.0;
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThreeHorizontal_0.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThreeHorizontal_1.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/CKSSThreeHorizontal_2.svg")));
 	}
 };
 
@@ -786,10 +860,47 @@ struct TL1105 : app::SvgSwitch {
 	}
 };
 
-struct LEDButton : app::SvgSwitch {
-	LEDButton() {
+struct VCVButton : app::SvgSwitch {
+	VCVButton() {
 		momentary = true;
-		addFrame(Svg::load(asset::system("res/ComponentLibrary/LEDButton.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/VCVButton_0.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/VCVButton_1.svg")));
+	}
+};
+using LEDButton = VCVButton;
+
+struct VCVLatch : VCVButton {
+	VCVLatch() {
+		momentary = false;
+		latch = true;
+	}
+};
+
+/** Looks best with MediumSimpleLight<WhiteLight> or a color of your choice.
+*/
+template <typename TLight>
+struct VCVLightButton : VCVButton {
+	app::ModuleLightWidget* light;
+
+	VCVLightButton() {
+		light = new TLight;
+		// Move center of light to center of box
+		light->box.pos = box.size.div(2).minus(light->box.size.div(2));
+		addChild(light);
+	}
+
+	app::ModuleLightWidget* getLight() {
+		return light;
+	}
+};
+template <typename TLight>
+using LEDLightButton = VCVLightButton<TLight>;
+
+template <typename TLight>
+struct VCVLightLatch : VCVLightButton<TLight> {
+	VCVLightLatch() {
+		this->momentary = false;
+		this->latch = true;
 	}
 };
 
@@ -809,22 +920,44 @@ struct BefacoPush : app::SvgSwitch {
 	}
 };
 
-struct LEDBezel : app::SvgSwitch {
-	LEDBezel() {
+struct VCVBezel : app::SvgSwitch {
+	VCVBezel() {
 		momentary = true;
-		addFrame(Svg::load(asset::system("res/ComponentLibrary/LEDBezel.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/VCVBezel.svg")));
+	}
+};
+using LEDBezel = VCVBezel;
+
+struct VCVBezelLatch : VCVBezel {
+	VCVBezelLatch() {
+		momentary = false;
+		latch = true;
 	}
 };
 
 template <typename TLightBase = WhiteLight>
-struct LEDLightBezel : LEDBezel {
+struct VCVLightBezel : VCVBezel {
 	app::ModuleLightWidget* light;
 
-	LEDLightBezel() {
-		light = new LEDBezelLight<TLightBase>;
+	VCVLightBezel() {
+		light = new VCVBezelLight<TLightBase>;
 		// Move center of light to center of box
 		light->box.pos = box.size.div(2).minus(light->box.size.div(2));
 		addChild(light);
+	}
+
+	app::ModuleLightWidget* getLight() {
+		return light;
+	}
+};
+template <typename TLightBase = WhiteLight>
+using LEDLightBezel = VCVLightBezel<TLightBase>;
+
+template <typename TLightBase = WhiteLight>
+struct VCVLightBezelLatch : VCVLightBezel<TLightBase> {
+	VCVLightBezelLatch() {
+		this->momentary = false;
+		this->latch = true;
 	}
 };
 
@@ -902,7 +1035,7 @@ struct AudioButton_ADAT : app::AudioButton {
 
 struct AudioButton_USB_B : app::AudioButton {
 	AudioButton_USB_B() {
-		addFrame(Svg::load(asset::system("res/ComponentLibrary/USB-B.svg")));
+		addFrame(Svg::load(asset::system("res/ComponentLibrary/USB_B.svg")));
 		shadow->opacity = 0.0;
 	}
 };

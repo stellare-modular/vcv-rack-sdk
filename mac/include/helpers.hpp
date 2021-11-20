@@ -35,6 +35,7 @@ plugin::Model* createModel(std::string slug) {
 				tm = dynamic_cast<TModule*>(m);
 			}
 			app::ModuleWidget* mw = new TModuleWidget(tm);
+			assert(mw->module == m);
 			mw->setModel(this);
 			return mw;
 		}
@@ -152,8 +153,8 @@ Requires ParamWidget to have a `light` member.
 template <class TParamWidget>
 TParamWidget* createLightParam(math::Vec pos, engine::Module* module, int paramId, int firstLightId) {
 	TParamWidget* o = createParam<TParamWidget>(pos, module, paramId);
-	o->light->module = module;
-	o->light->firstLightId = firstLightId;
+	o->getLight()->module = module;
+	o->getLight()->firstLightId = firstLightId;
 	return o;
 }
 
@@ -168,31 +169,31 @@ TParamWidget* createLightParamCentered(math::Vec pos, engine::Module* module, in
 
 template <class TMenu = ui::Menu>
 TMenu* createMenu() {
-	TMenu* o = new TMenu;
-	o->box.pos = APP->scene->mousePos;
+	TMenu* menu = new TMenu;
+	menu->box.pos = APP->scene->mousePos;
 
 	ui::MenuOverlay* menuOverlay = new ui::MenuOverlay;
-	menuOverlay->addChild(o);
+	menuOverlay->addChild(menu);
 
 	APP->scene->addChild(menuOverlay);
-	return o;
+	return menu;
 }
 
 
 template <class TMenuLabel = ui::MenuLabel>
 TMenuLabel* createMenuLabel(std::string text) {
-	TMenuLabel* o = new TMenuLabel;
-	o->text = text;
-	return o;
+	TMenuLabel* label = new TMenuLabel;
+	label->text = text;
+	return label;
 }
 
 
 template <class TMenuItem = ui::MenuItem>
 TMenuItem* createMenuItem(std::string text, std::string rightText = "") {
-	TMenuItem* o = new TMenuItem;
-	o->text = text;
-	o->rightText = rightText;
-	return o;
+	TMenuItem* item = new TMenuItem;
+	item->text = text;
+	item->rightText = rightText;
+	return item;
 }
 
 
@@ -229,7 +230,7 @@ TMenuItem* createMenuItem(std::string text, std::string rightText, std::function
 /** Creates a MenuItem with a check mark set by a lambda function.
 Example:
 
-	menu->addChild(createCheckMenuItem("Loop",
+	menu->addChild(createCheckMenuItem("Loop", "",
 		[=]() {
 			return module->isLoop();
 		},
@@ -275,7 +276,7 @@ ui::MenuItem* createCheckMenuItem(std::string text, std::string rightText, std::
 /** Creates a MenuItem that controls a boolean value with a check mark.
 Example:
 
-	menu->addChild(createBoolMenuItem("Loop",
+	menu->addChild(createBoolMenuItem("Loop", "",
 		[=]() {
 			return module->isLoop();
 		},
@@ -321,13 +322,18 @@ ui::MenuItem* createBoolMenuItem(std::string text, std::string rightText, std::f
 /** Easy wrapper for createBoolMenuItem() to modify a bool pointer.
 Example:
 
-	menu->addChild(createBoolPtrMenuItem("Loop", &module->loop));
+	menu->addChild(createBoolPtrMenuItem("Loop", "", &module->loop));
 */
 template <typename T>
 ui::MenuItem* createBoolPtrMenuItem(std::string text, std::string rightText, T* ptr) {
 	return createBoolMenuItem(text, rightText,
-		[=]() {return *ptr;},
-		[=](T val) {*ptr = val;}
+		[=]() {
+			return ptr ? *ptr : false;
+		},
+		[=](T val) {
+			if (ptr)
+				*ptr = val;
+		}
 	);
 }
 
@@ -441,8 +447,13 @@ Example:
 template <typename T>
 ui::MenuItem* createIndexPtrSubmenuItem(std::string text, std::vector<std::string> labels, T* ptr) {
 	return createIndexSubmenuItem(text, labels,
-		[=]() {return *ptr;},
-		[=](size_t index) {*ptr = T(index);}
+		[=]() {
+			return ptr ? *ptr : 0;
+		},
+		[=](size_t index) {
+			if (ptr)
+				*ptr = T(index);
+		}
 	);
 }
 

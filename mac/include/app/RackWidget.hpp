@@ -22,12 +22,11 @@ struct RackWidget : widget::OpaqueWidget {
 	struct Internal;
 	Internal* internal;
 
-	CableWidget* incompleteCable = NULL;
+	/** DEPRECATED. Use get/setTouchedParam(). */
 	ParamWidget* touchedParam = NULL;
-	int nextCableColorId = 0;
 
-	RackWidget();
-	~RackWidget();
+	PRIVATE RackWidget();
+	PRIVATE ~RackWidget();
 
 	void step() override;
 	void draw(const DrawArgs& args) override;
@@ -111,6 +110,7 @@ struct RackWidget : widget::OpaqueWidget {
 	/** Removes cable and releases ownership to caller.
 	*/
 	void removeCable(CableWidget* cw);
+	CableWidget* getIncompleteCable();
 	/** Takes ownership of `cw` and adds it as a child if it isn't already. */
 	void setIncompleteCable(CableWidget* cw);
 	CableWidget* releaseIncompleteCable();
@@ -120,6 +120,13 @@ struct RackWidget : widget::OpaqueWidget {
 	std::vector<CableWidget*> getCompleteCables();
 	/** Returns all cables attached to port, complete or not. */
 	std::vector<CableWidget*> getCablesOnPort(PortWidget* port);
+	/** Returns but does not advance the next cable color. */
+	int getNextCableColorId();
+	void setNextCableColorId(int id);
+	/** Returns and advances the next cable color. */
+	NVGcolor getNextCableColor();
+	ParamWidget* getTouchedParam();
+	void setTouchedParam(ParamWidget* pw);
 };
 
 

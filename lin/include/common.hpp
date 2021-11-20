@@ -15,27 +15,19 @@
 #include <string>
 #include <stdexcept>
 
-#include <logger.hpp>
-
 
 /** Attribute for deprecated functions and symbols.
 E.g.
 
 	DEPRECATED void foo();
 */
-#if defined __GNUC__ || defined __clang__
-	#define DEPRECATED __attribute__((deprecated))
-#elif defined _MSC_VER
-	#define DEPRECATED __declspec(deprecated)
-#endif
+#define DEPRECATED __attribute__((deprecated))
 
-/** Attribute for private functions and symbols not intended to be used by plugins.
-When #including rack.hpp, using an INTERNAL function prints a compile-time warning and will not link.
+/** Attribute for private functions not intended to be called by plugins.
+When #including rack.hpp, attempting to call PRIVATE functions will result in a compile-time error.
 */
-#if defined ARCH_WIN
-	#define INTERNAL
-#else
-	#define INTERNAL __attribute__((visibility("hidden")))
+#ifndef PRIVATE
+#define PRIVATE
 #endif
 
 
@@ -266,8 +258,12 @@ extern const std::string APP_EDITION;
 extern const std::string APP_EDITION_NAME;
 extern const std::string APP_VERSION_MAJOR;
 extern const std::string APP_VERSION;
-extern const std::string APP_ARCH;
+extern const std::string APP_OS;
 extern const std::string API_URL;
 
 
 } // namespace rack
+
+
+// Logger depends on common.hpp, but it is handy to include it along with common.hpp.
+#include <logger.hpp>

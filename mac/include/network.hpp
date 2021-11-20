@@ -20,7 +20,8 @@ enum Method {
 	METHOD_DELETE,
 };
 
-void init();
+PRIVATE void init();
+PRIVATE void destroy();
 /** Requests a JSON API URL over HTTP(S), using the data as the query (GET) or the body (POST, etc)
 Caller must json_decref() if return value is non-NULL.
 */
