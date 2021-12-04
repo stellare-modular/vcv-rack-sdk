@@ -11,8 +11,6 @@ namespace ui {
 struct TextField : widget::OpaqueWidget {
 	std::string text;
 	std::string placeholder;
-	/** Masks text with "*". */
-	bool password = false;
 	bool multiline = false;
 	/** The index of the text cursor */
 	int cursor = 0;
@@ -47,13 +45,6 @@ struct TextField : widget::OpaqueWidget {
 	void cursorToPrevWord();
 	void cursorToNextWord();
 	void createContextMenu();
-};
-
-
-struct PasswordField : TextField {
-	PasswordField() {
-		password = true;
-	}
 };
 
 

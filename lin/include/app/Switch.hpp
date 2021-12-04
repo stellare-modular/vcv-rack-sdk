@@ -16,8 +16,7 @@ struct Switch : ParamWidget {
 	struct Internal;
 	Internal* internal;
 
-	/** Instead of incrementing values on each click, sets maxValue on press and minValue on release.
-	*/
+	/** Return to original position when released */
 	bool momentary = false;
 
 	Switch();

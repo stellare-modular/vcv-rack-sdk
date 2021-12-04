@@ -13,13 +13,11 @@ namespace app {
 Will access firstLightId, firstLightId + 1, etc. for each added color
 */
 struct ModuleLightWidget : MultiLightWidget {
-	struct Internal;
-	Internal* internal;
-
 	engine::Module* module = NULL;
 	int firstLightId = -1;
 
-	ModuleLightWidget();
+	ui::Tooltip* tooltip = NULL;
+
 	~ModuleLightWidget();
 	engine::Light* getLight(int colorId);
 	engine::LightInfo* getLightInfo();

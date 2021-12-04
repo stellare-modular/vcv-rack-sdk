@@ -15,21 +15,15 @@ struct Knob : ParamWidget {
 
 	/** Drag horizontally instead of vertically. */
 	bool horizontal = false;
-	/** Enables per-sample value smoothing while dragging.
-	Alternatively, use ParamQuantity::smoothEnabled.
-	*/
+	/** Enables per-sample value smoothing while dragging. */
 	bool smooth = true;
-	/** Enables value snapping to the nearest integer.
-	Alternatively, use ParamQuantity::snapEnabled.
-	*/
+	/** Enables value snapping to the nearest integer. */
 	bool snap = false;
 	/** Multiplier for mouse movement to adjust knob value */
 	float speed = 1.f;
 	/** Force dragging to linear, e.g. for sliders. */
 	bool forceLinear = false;
-	/** Angles in radians.
-	For drawing and handling the global radial knob setting.
-	*/
+	/** Angles in radians. */
 	float minAngle = -M_PI;
 	float maxAngle = M_PI;
 

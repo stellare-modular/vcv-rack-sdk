@@ -20,10 +20,9 @@ struct Port {
 		float value;
 	};
 	union {
-		/** Number of polyphonic channels.
+		/** Number of polyphonic channels
 		DEPRECATED. Unstable API. Use set/getChannels() instead.
 		May be 0 to PORT_MAX_CHANNELS.
-		0 channels means disconnected.
 		*/
 		uint8_t channels = 0;
 		/** DEPRECATED. Unstable API. Use isConnected() instead. */
@@ -104,9 +103,7 @@ struct Port {
 		return sum;
 	}
 
-	/** Returns the root-mean-square of all voltages.
-	Uses sqrt() which is slow, so use a custom approximation if calling frequently.
-	*/
+	/** Returns the root-mean-square of all voltages. */
 	float getVoltageRMS() {
 		if (channels == 0) {
 			return 0.f;

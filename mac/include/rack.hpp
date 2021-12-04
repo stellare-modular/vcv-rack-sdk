@@ -7,7 +7,7 @@ Directly including Rack headers other than rack.hpp in your plugin is unsupporte
 */
 
 #ifdef PRIVATE
-#warning "Plugins must only include rack.hpp. Including other Rack headers is unsupported."
+#error "Plugins must only include rack.hpp. Including other Rack headers is unsupported."
 #endif
 
 /** Functions with the PRIVATE attribute should not be called by plugins.
@@ -64,6 +64,7 @@ Directly including Rack headers other than rack.hpp in your plugin is unsupporte
 #include <ui/RadioButton.hpp>
 #include <ui/Menu.hpp>
 #include <ui/ScrollWidget.hpp>
+#include <ui/PasswordField.hpp>
 
 #include <app/SliderKnob.hpp>
 #include <app/MultiLightWidget.hpp>
