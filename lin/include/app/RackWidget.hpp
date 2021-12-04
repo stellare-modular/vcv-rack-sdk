@@ -22,6 +22,7 @@ struct RackWidget : widget::OpaqueWidget {
 	struct Internal;
 	Internal* internal;
 
+	/** DEPRECATED. Use get/setTouchedParam(). */
 	ParamWidget* touchedParam = NULL;
 
 	PRIVATE RackWidget();
@@ -119,7 +120,14 @@ struct RackWidget : widget::OpaqueWidget {
 	std::vector<CableWidget*> getCompleteCables();
 	/** Returns all cables attached to port, complete or not. */
 	std::vector<CableWidget*> getCablesOnPort(PortWidget* port);
+	std::vector<CableWidget*> getCompleteCablesOnPort(PortWidget* port);
+	/** Returns but does not advance the next cable color. */
+	int getNextCableColorId();
+	void setNextCableColorId(int id);
+	/** Returns and advances the next cable color. */
 	NVGcolor getNextCableColor();
+	ParamWidget* getTouchedParam();
+	void setTouchedParam(ParamWidget* pw);
 };
 
 

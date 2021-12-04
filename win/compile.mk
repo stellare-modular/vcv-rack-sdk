@@ -28,8 +28,10 @@ endif
 ifdef ARCH_MAC
 	FLAGS += -DARCH_MAC
 	CXXFLAGS += -stdlib=libc++
+	LDFLAGS += -stdlib=libc++
 	MAC_SDK_FLAGS := -mmacosx-version-min=10.9
 	FLAGS += $(MAC_SDK_FLAGS)
+	LDFLAGS += $(MAC_SDK_FLAGS)
 endif
 ifdef ARCH_WIN
 	FLAGS += -DARCH_WIN
