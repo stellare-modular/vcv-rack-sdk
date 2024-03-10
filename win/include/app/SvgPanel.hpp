@@ -3,7 +3,7 @@
 #include <widget/TransparentWidget.hpp>
 #include <widget/FramebufferWidget.hpp>
 #include <widget/SvgWidget.hpp>
-#include <context.hpp>
+#include <settings.hpp>
 
 
 namespace rack {
@@ -28,6 +28,23 @@ struct SvgPanel : widget::Widget {
 
 
 DEPRECATED typedef SvgPanel SVGPanel;
+
+
+struct ThemedSvgPanel : SvgPanel {
+	std::shared_ptr<window::Svg> lightSvg;
+	std::shared_ptr<window::Svg> darkSvg;
+
+	void setBackground(std::shared_ptr<window::Svg> lightSvg, std::shared_ptr<window::Svg> darkSvg) {
+		this->lightSvg = lightSvg;
+		this->darkSvg = darkSvg;
+		SvgPanel::setBackground(settings::preferDarkPanels ? darkSvg : lightSvg);
+	}
+
+	void step() override {
+		SvgPanel::setBackground(settings::preferDarkPanels ? darkSvg : lightSvg);
+		SvgPanel::step();
+	}
+};
 
 
 } // namespace app

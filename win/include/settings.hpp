@@ -27,6 +27,8 @@ extern bool isPlugin;
 
 // Persistent state, serialized to settings.json.
 
+/** Launches Rack without loading plugins or the autosave patch. Always set to false when settings are saved. */
+extern bool safeMode;
 /** vcvrack.com user token */
 extern std::string token;
 /** Whether the window is maximized */
@@ -41,6 +43,8 @@ extern bool invertZoom;
 0 for auto.
 */
 extern float pixelRatio;
+/** Name of UI theme, specified in ui::refreshTheme() */
+extern std::string uiTheme;
 /** Opacity of cables in the range [0, 1] */
 extern float cableOpacity;
 /** Straightness of cables in the range [0, 1]. Unitless and arbitrary. */
@@ -64,7 +68,11 @@ extern int threadCount;
 extern bool tooltips;
 extern bool cpuMeter;
 extern bool lockModules;
-extern int frameSwapInterval;
+extern bool squeezeModules;
+extern bool preferDarkPanels;
+/** Maximum screen redraw frequency in Hz, or 0 for unlimited. */
+extern float frameRateLimit;
+/** Interval between autosaves in seconds. */
 extern float autosaveInterval;
 extern bool skipLoadOnLaunch;
 extern std::list<std::string> recentPatchPaths;
@@ -72,7 +80,6 @@ extern std::vector<NVGcolor> cableColors;
 extern bool autoCheckUpdates;
 extern bool showTipsOnLaunch;
 extern int tipIndex;
-extern bool discordUpdateActivity;
 enum BrowserSort {
 	BROWSER_SORT_UPDATED,
 	BROWSER_SORT_LAST_USED,
@@ -83,6 +90,7 @@ enum BrowserSort {
 };
 extern BrowserSort browserSort;
 extern float browserZoom;
+extern json_t* pluginSettingsJ;
 
 struct ModuleInfo {
 	bool enabled = true;
@@ -110,6 +118,7 @@ extern std::map<std::string, PluginWhitelist> moduleWhitelist;
 bool isModuleWhitelisted(const std::string& pluginSlug, const std::string& moduleSlug);
 
 PRIVATE void init();
+PRIVATE void destroy();
 PRIVATE json_t* toJson();
 PRIVATE void fromJson(json_t* rootJ);
 PRIVATE void save(std::string path = "");

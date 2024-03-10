@@ -33,9 +33,12 @@ struct Manager {
 	/** Saves the patch and nothing else. */
 	void save(std::string path);
 	void saveDialog();
-	void saveAsDialog();
+	void saveAsDialog(bool setPath = true);
 	void saveTemplateDialog();
 	void saveAutosave();
+	/** Delete and re-create autosave dir. */
+	void clearAutosave();
+	/** Clean up nonexistent module patch storage dirs in autosave dir. */
 	void cleanAutosave();
 	/** Loads a patch and nothing else.
 	Returns whether the patch was loaded successfully.

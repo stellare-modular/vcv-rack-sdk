@@ -680,11 +680,10 @@ struct BefacoTinyKnob : app::SvgKnob {
 
 struct BefacoSlidePot : app::SvgSlider {
 	BefacoSlidePot() {
-		math::Vec margin = math::Vec(3.5, 3.5);
-		maxHandlePos = math::Vec(-1, -2).plus(margin);
-		minHandlePos = math::Vec(-1, 87).plus(margin);
 		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoSlidePot.svg")));
 		setHandleSvg(Svg::load(asset::system("res/ComponentLibrary/BefacoSlidePotHandle.svg")));
+		math::Vec margin = math::Vec(3.5, 3.5);
+		setHandlePos(math::Vec(-1, 87).plus(margin), math::Vec(-1, -2).plus(margin));
 		background->box.pos = margin;
 		box.size = background->box.size.plus(margin.mult(2));
 	}
@@ -705,11 +704,10 @@ using LEDSlider = VCVSlider;
 struct VCVSliderHorizontal : app::SvgSlider {
 	VCVSliderHorizontal() {
 		horizontal = true;
-		// TODO Fix positions
-		maxHandlePos = mm2px(math::Vec(22.078, 0.738).plus(math::Vec(0, 2)));
-		minHandlePos = mm2px(math::Vec(0.738, 0.738).plus(math::Vec(0, 2)));
 		// TODO Fix SVG
 		setBackgroundSvg(Svg::load(asset::system("res/ComponentLibrary/VCVSliderHorizontal.svg")));
+		// TODO Fix positions
+		setHandlePos(mm2px(math::Vec(0.738, 0.738).plus(math::Vec(0, 2))), mm2px(math::Vec(22.078, 0.738).plus(math::Vec(0, 2))));
 	}
 };
 using LEDSliderHorizontal = VCVSliderHorizontal;
@@ -782,6 +780,18 @@ using LEDLightSliderHorizontal = VCVLightSliderHorizontal<TLightBase>;
 struct PJ301MPort : app::SvgPort {
 	PJ301MPort() {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/PJ301M.svg")));
+	}
+};
+
+struct DarkPJ301MPort : app::SvgPort {
+	DarkPJ301MPort() {
+		setSvg(Svg::load(asset::system("res/ComponentLibrary/PJ301M-dark.svg")));
+	}
+};
+
+struct ThemedPJ301MPort : app::ThemedSvgPort {
+	ThemedPJ301MPort() {
+		setSvg(Svg::load(asset::system("res/ComponentLibrary/PJ301M.svg")), Svg::load(asset::system("res/ComponentLibrary/PJ301M-dark.svg")));
 	}
 };
 
@@ -876,23 +886,26 @@ struct VCVLatch : VCVButton {
 	}
 };
 
-/** Looks best with MediumSimpleLight<WhiteLight> or a color of your choice.
-*/
-template <typename TLight>
-struct VCVLightButton : VCVButton {
+template <typename TBase, typename TLight = WhiteLight>
+struct LightButton : TBase {
 	app::ModuleLightWidget* light;
 
-	VCVLightButton() {
+	LightButton() {
 		light = new TLight;
 		// Move center of light to center of box
-		light->box.pos = box.size.div(2).minus(light->box.size.div(2));
-		addChild(light);
+		light->box.pos = this->box.size.div(2).minus(light->box.size.div(2));
+		this->addChild(light);
 	}
 
 	app::ModuleLightWidget* getLight() {
 		return light;
 	}
 };
+
+template <typename TLight = WhiteLight>
+using VCVLightButton = LightButton<VCVButton, TLight>;
+
+/** Deprecated alias */
 template <typename TLight>
 using LEDLightButton = VCVLightButton<TLight>;
 
@@ -983,6 +996,13 @@ struct ScrewBlack : app::SvgScrew {
 		setSvg(Svg::load(asset::system("res/ComponentLibrary/ScrewBlack.svg")));
 	}
 };
+
+struct ThemedScrew : app::ThemedSvgScrew {
+	ThemedScrew() {
+		setSvg(Svg::load(asset::system("res/ComponentLibrary/ScrewSilver.svg")), Svg::load(asset::system("res/ComponentLibrary/ScrewBlack.svg")));
+	}
+};
+
 
 struct SegmentDisplay : widget::Widget {
 	int lightsLen = 0;

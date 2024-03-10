@@ -51,11 +51,6 @@ TODO: Implement on Windows and GTK2.
 */
 char* osdialog_prompt(osdialog_message_level level, const char* message, const char* text);
 
-typedef enum {
-	OSDIALOG_OPEN,
-	OSDIALOG_OPEN_DIR,
-	OSDIALOG_SAVE,
-} osdialog_file_action;
 
 /** Linked list of patterns. */
 typedef struct osdialog_filter_patterns {
@@ -70,6 +65,21 @@ typedef struct osdialog_filters {
 	struct osdialog_filters* next;
 } osdialog_filters;
 
+/** Parses a filter string.
+Example: "Source:c,cpp,m;Header:h,hpp"
+Caller must eventually free with osdialog_filters_free().
+*/
+osdialog_filters* osdialog_filters_parse(const char* str);
+void osdialog_filter_patterns_free(osdialog_filter_patterns* patterns);
+void osdialog_filters_free(osdialog_filters* filters);
+
+
+typedef enum {
+	OSDIALOG_OPEN,
+	OSDIALOG_OPEN_DIR,
+	OSDIALOG_SAVE,
+} osdialog_file_action;
+
 /** Launches a file dialog and returns the selected path or NULL if nothing was selected.
 
 `path` is the default folder the file dialog will attempt to open in, or NULL for the OS's default.
@@ -80,13 +90,6 @@ Returns the selected file, or NULL if the dialog was cancelled.
 If the return result is not NULL, caller must free() it.
 */
 char* osdialog_file(osdialog_file_action action, const char* path, const char* filename, osdialog_filters* filters);
-
-/** Parses a filter string.
-Example: "Source:c,cpp,m;Header:h,hpp"
-Caller must eventually free with osdialog_filters_free().
-*/
-osdialog_filters* osdialog_filters_parse(const char* str);
-void osdialog_filters_free(osdialog_filters* filters);
 
 
 typedef struct {
@@ -102,6 +105,20 @@ Returns 1 if "OK" was pressed.
 TODO Implement on Mac.
 */
 int osdialog_color_picker(osdialog_color* color, int opacity);
+
+
+typedef void* (*osdialog_save_callback)();
+typedef void (*osdialog_restore_callback)(void* ptr);
+
+/** Sets callback that is called before each dialog is opened.
+This is useful for saving/restoring global state that an OS dialog might modify.
+*/
+void osdialog_set_save_callback(osdialog_save_callback cb);
+
+/** Sets callback that is called after each dialog is closed.
+The pointer returned by osdialog_save_callback() is passed as an argument to osdialog_restore_callback().
+*/
+void osdialog_set_restore_callback(osdialog_restore_callback cb);
 
 
 #ifdef __cplusplus

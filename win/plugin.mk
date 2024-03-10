@@ -23,8 +23,10 @@ LDFLAGS += -L$(RACK_DIR) -lRack
 
 include $(RACK_DIR)/arch.mk
 
+TARGET := plugin
+
 ifdef ARCH_LIN
-	TARGET := plugin.so
+	TARGET := $(TARGET).so
 	# This prevents static variables in the DSO (dynamic shared object) from being preserved after dlclose().
 	FLAGS += -fno-gnu-unique
 	# When Rack loads a plugin, it symlinks /tmp/Rack2 to its system dir, so the plugin can link to libRack.
@@ -35,17 +37,19 @@ ifdef ARCH_LIN
 endif
 
 ifdef ARCH_MAC
-	TARGET := plugin.dylib
+	TARGET := $(TARGET).dylib
 	LDFLAGS += -undefined dynamic_lookup
 	RACK_USER_DIR ?= $(HOME)/Documents/Rack2
+	CODESIGN ?= codesign -f -s -
 endif
 
 ifdef ARCH_WIN
-	TARGET := plugin.dll
+	TARGET := $(TARGET).dll
 	LDFLAGS += -static-libstdc++
 	RACK_USER_DIR ?= $(USERPROFILE)/Documents/Rack2
 endif
 
+PLUGINS_DIR := $(RACK_USER_DIR)/plugins-$(ARCH_OS)-$(ARCH_CPU)
 
 DEP_FLAGS += -fPIC
 include $(RACK_DIR)/dep.mk
@@ -63,7 +67,7 @@ ZSTD_COMPRESSION_LEVEL ?= 19
 dist: all
 	rm -rf dist
 	mkdir -p dist/$(SLUG)
-	@# Strip and copy plugin binary
+	@# Strip symbols from binary
 	cp $(TARGET) dist/$(SLUG)/
 ifdef ARCH_MAC
 	$(STRIP) -S dist/$(SLUG)/$(TARGET)
@@ -72,6 +76,10 @@ ifdef ARCH_MAC
 else
 	$(STRIP) -s dist/$(SLUG)/$(TARGET)
 endif
+	@# Sign binary if CODESIGN is defined
+ifdef CODESIGN
+	$(CODESIGN) dist/$(SLUG)/$(TARGET)
+endif
 	@# Copy distributables
 ifdef ARCH_MAC
 	rsync -rR $(DISTRIBUTABLES) dist/$(SLUG)/
@@ -79,11 +87,11 @@ else
 	cp -r --parents $(DISTRIBUTABLES) dist/$(SLUG)/
 endif
 	@# Create ZIP package
-	cd dist && tar -c $(SLUG) | zstd -$(ZSTD_COMPRESSION_LEVEL) -o "$(SLUG)"-"$(VERSION)"-$(ARCH_OS_NAME).vcvplugin
+	cd dist && tar -c $(SLUG) | zstd -$(ZSTD_COMPRESSION_LEVEL) -o "$(SLUG)"-"$(VERSION)"-$(ARCH_NAME).vcvplugin
 
 install: dist
-	mkdir -p "$(RACK_USER_DIR)"/plugins/
-	cp dist/*.vcvplugin "$(RACK_USER_DIR)"/plugins/
+	mkdir -p "$(PLUGINS_DIR)"
+	cp dist/*.vcvplugin "$(PLUGINS_DIR)"/
 
 .PHONY: clean dist
 .DEFAULT_GOAL := all

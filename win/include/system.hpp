@@ -115,6 +115,7 @@ std::string getExtension(const std::string& path);
 Throws on error.
 */
 std::vector<uint8_t> readFile(const std::string& path);
+uint8_t* readFile(const std::string& path, size_t* size);
 
 /** Writes a memory buffer to a file, overwriting if already exists.
 Throws on error.
@@ -145,6 +146,9 @@ or
 
 	tar -xf archivePath --zstd -C dirPath
 
+As a special case, zero-byte files in the archive cause the unarchiver to delete existing files instead of overwriting them.
+This is useful for removing presets in .vcvplugin packages, for example.
+
 Throws on error.
 */
 void unarchiveToDirectory(const std::string& archivePath, const std::string& dirPath);
@@ -163,13 +167,14 @@ void setThreadName(const std::string& name);
 /** Returns the caller's human-readable stack trace with "\n"-separated lines. */
 std::string getStackTrace();
 /** Returns the number of seconds since application launch.
-Gives the most precise (fine-grained) time differences available on the OS for benchmarking purposes, while being fast to compute.
+Gives the most precise (fine-grained) monotonic (non-decreasing) time differences available on the OS for benchmarking purposes, while being fast to compute.
 */
 double getTime();
 /** Returns time since 1970-01-01 00:00:00 UTC in seconds.
 */
 double getUnixTime();
 double getThreadTime();
+void sleep(double time);
 std::string getOperatingSystemInfo();
 
 // Applications

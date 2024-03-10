@@ -90,5 +90,46 @@ std::wstring UTF8toUTF16(const std::string& s);
 #endif
 
 
+/** Structured version string, for comparison.
+
+Strings are split into parts by "." and compared lexicographically.
+Parts are compared as the following.
+
+If both parts can be parsed as integers (such as "10" and "2"), their integer value is compared (so "10" is greater).
+If one part cannot be parsed as an integer (such as "2" and "beta"), the integer part is greater ("2").
+If neither part can be parsed as an integer (such as "alpha" and "beta"), the parts are compared as strings in typical lexicographical order.
+
+For example, the following versions are sorted earliest to latest.
+
+	1.a.0
+	1.b.0
+	1.0.0
+	1.0.1
+	1.2.0
+	1.10.0
+	2.0.0
+*/
+struct Version {
+	std::vector<std::string> parts;
+
+	Version() {}
+	Version(const std::string& s);
+	Version(const char* s) : Version(std::string(s)) {}
+	operator std::string() const;
+	/** Returns whether this version is earlier than `other`. */
+	bool operator<(const Version& other);
+
+	std::string getMajor() const {
+		return get(parts, 0, "");
+	}
+	std::string getMinor() const {
+		return get(parts, 1, "");
+	}
+	std::string getRevision() const {
+		return get(parts, 2, "");
+	}
+};
+
+
 } // namespace string
 } // namespace rack

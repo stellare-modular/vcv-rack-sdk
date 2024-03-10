@@ -41,7 +41,7 @@ struct RtMidiWrapper {
     void* ptr;
     void* data;
 
-    //! True when the last function call was OK. 
+    //! True when the last function call was OK.
     bool  ok;
 
     //! If an error occured (ok != true), set to an error message.
@@ -136,8 +136,8 @@ RTMIDIAPI void rtmidi_error (enum RtMidiErrorType type, const char* errorString)
  */
 RTMIDIAPI void rtmidi_open_port (RtMidiPtr device, unsigned int portNumber, const char *portName);
 
-/*! \brief Creates a virtual MIDI port to which other software applications can 
- * connect.  
+/*! \brief Creates a virtual MIDI port to which other software applications can
+ * connect.
  *
  * \param portName  Name for the application port.
  *
@@ -155,10 +155,14 @@ RTMIDIAPI void rtmidi_close_port (RtMidiPtr device);
  */
 RTMIDIAPI unsigned int rtmidi_get_port_count (RtMidiPtr device);
 
-/*! \brief Return a string identifier for the specified MIDI input port number.
+/*! \brief Access a string identifier for the specified MIDI input port number.
+ * 
+ * To prevent memory leaks a char buffer must be passed to this function.
+ * NULL can be passed as bufOut parameter, and that will write the required buffer length in the bufLen.
+ * 
  * See RtMidi::getPortName().
  */
-RTMIDIAPI const char* rtmidi_get_port_name (RtMidiPtr device, unsigned int portNumber);
+RTMIDIAPI int rtmidi_get_port_name (RtMidiPtr device, unsigned int portNumber, char * bufOut, int * bufLen);
 
 /* RtMidiIn API */
 
@@ -203,8 +207,9 @@ RTMIDIAPI void rtmidi_in_ignore_types (RtMidiInPtr device, bool midiSysex, bool 
  * \param message   Must point to a char* that is already allocated.
  *                  SYSEX messages maximum size being 1024, a statically
  *                  allocated array could
- *                  be sufficient. 
- * \param size      Is used to return the size of the message obtained. 
+ *                  be sufficient.
+ * \param size      Is used to return the size of the message obtained.
+ *                  Must be set to the size of \ref message when calling.
  *
  * See RtMidiIn::getMessage().
  */

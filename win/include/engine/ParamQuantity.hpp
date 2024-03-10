@@ -14,7 +14,10 @@ namespace engine {
 struct Module;
 
 
-/** A Quantity that wraps an engine::Param. */
+/** A Quantity that wraps an engine::Param.
+
+If `smoothEnabled` is true, all methods access/modify the Param's target value of the Engine's per-sample smoothing algorithm instead of the immediate value.
+*/
 struct ParamQuantity : Quantity {
 	Module* module = NULL;
 	int paramId = -1;
@@ -64,18 +67,38 @@ struct ParamQuantity : Quantity {
 	bool snapEnabled = false;
 
 	Param* getParam();
-	/** If smoothEnabled is true, requests to the engine to smoothly move to a target value each sample. */
-	void setSmoothValue(float value);
-	float getSmoothValue();
 
+	/** Sets the target value of the Engine's smoothing algorithm, or immediate value if smoothing is disabled.
+
+	Before Rack 2.3.0, this always set the Param's immediate value.
+	For this behavior, use `setImmediateValue()` instead.
+	*/
 	void setValue(float value) override;
+	/** Gets the Param's smoothing target value, or immediate value if smoothing is disabled.
+
+	Before Rack 2.3.0, this always got the Param's immediate value.
+	For this behavior, use `getImmediateValue()` instead.
+	*/
 	float getValue() override;
+	/** Sets the Param's value immediately without smoothing.
+
+	If the Param's value is currently being smoothed by the Engine, smoothing is canceled.
+	*/
+	void setImmediateValue(float value);
+	/** Gets the Param's value post-smoothing.
+
+	If (and only if) the Param's value is currently being smoothed by the Engine, the return value is different than getValue().
+	*/
+	float getImmediateValue();
+
 	float getMinValue() override;
 	float getMaxValue() override;
 	float getDefaultValue() override;
 	float getDisplayValue() override;
+	/** Always sets immediate value. */
 	void setDisplayValue(float displayValue) override;
 	std::string getDisplayValueString() override;
+	/** Always sets immediate value. */
 	void setDisplayValueString(std::string s) override;
 	int getDisplayPrecision() override;
 	std::string getLabel() override;
@@ -87,6 +110,11 @@ struct ParamQuantity : Quantity {
 
 	virtual json_t* toJson();
 	virtual void fromJson(json_t* rootJ);
+
+	/** Deprecated. Use setValue() instead, which is identical since Rack 2.3.0. */
+	DEPRECATED void setSmoothValue(float value);
+	/** Deprecated. Use getValue() instead, which is identical since Rack 2.3.0. */
+	DEPRECATED float getSmoothValue();
 };
 
 
