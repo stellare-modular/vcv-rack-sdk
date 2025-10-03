@@ -1,0 +1,839 @@
+<h1>VCV Rack changelog</h1>
+
+<p>In this document, Ctrl means Command (⌘) on Mac.</p>
+
+<h3>2.6.4 (in development)</h3>
+
+<ul>
+<li>Fix dragging knobs on Mac when UI scale is set to non-Auto.</li>
+<li>SDK
+<ul>
+<li>Fix GLEW and libarchive build failure when CMake 4 is installed.</li>
+<li>Update to GLEW 2.2.0.</li>
+</ul></li>
+</ul>
+
+<h3>2.6.3 (2025-03-26)</h3>
+
+<ul>
+<li>Fix failure to launch on Windows 7.</li>
+<li>Rack Pro
+<ul>
+<li>Audio Unit: Fix crash when controlling multiple parameters with <em>VCV MIDI Map</em>.</li>
+</ul></li>
+</ul>
+
+<h3>2.6.2 (2025-03-17)</h3>
+
+<ul>
+<li>Fix incorrect audio driver being loaded from patches made in Rack ≤2.6.0.</li>
+<li>Fix Mac installer creating duplicate app bundle.</li>
+</ul>
+
+<h3>2.6.1 (2025-03-14)</h3>
+
+<ul>
+<li>Add UI translations for:
+<ul>
+<li>German</li>
+<li>Spanish</li>
+<li>French</li>
+<li>Italian</li>
+<li>Chinese (Simplified)</li>
+<li>Japanese</li>
+</ul></li>
+<li>Add Chinese, Japanese, and emoji fonts.</li>
+<li>Accept Unicode text in text fields.</li>
+<li>Add "View > UI scale" menu setting.</li>
+<li>Add note voltage constants to parameter expression evaluator such as <code>C4v</code>, <code>A#5v</code>, <code>Gb0v</code>, etc.</li>
+<li>Allow installing to user Applications and plugin folders on Mac.</li>
+<li>Remember last patch and selection folder after creating a new patch.</li>
+<li>Fix loading/saving patches on Mac x64.</li>
+<li>Fix non-ASCII audio device names displaying as blank on Windows.</li>
+<li>Fix key command mapping and names on non-QWERTY keyboard layouts.</li>
+<li>Use Mac-native arrow key commands for navigating text fields.</li>
+<li>Rack Pro
+<ul>
+<li>Fix automation parameter values resetting to 0.0 upon initialization in VST3 in some DAWs.</li>
+<li>Allow VST3 plugin to receive 16 MIDI channels of MIDI CC, pitch bend, and channel aftertouch.</li>
+<li>Improve CLAP plugin loading speed.</li>
+</ul></li>
+<li>Core
+<ul>
+<li>Fix DC filter accuracy of Right input when normalled to Left input in VCV Audio 2.</li>
+<li>Change default MIDI CC numbers of <em>VCV MIDI CC to CV</em> and <em>VCV CV to MIDI CC</em> modules to 1-16 instead of 0-15.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Add <code>Widget::KeyBaseEvent::isKeyCommand()</code> for checking key commands on all keyboard layouts.</li>
+<li>Add <code>settings::language</code> global variable.</li>
+<li>Add <code>string::UTF32toUTF8()</code>, <code>UTF8toUTF32()</code>, and <code>UTF8*()</code> functions.</li>
+<li>Update to zstd 1.5.6 and libarchive 3.7.7.</li>
+<li>Update RtAudio.</li>
+</ul></li>
+</ul>
+
+<h3>2.6.0 (2024-11-20)</h3>
+
+<ul>
+<li>Add ability to grab all plugs stacked on a port with the "All cables" menu item.</li>
+<li>When dropping a plug on a port, always stack it on top of other plugs.</li>
+<li>Add "View > Zoom to fit modules" to menu bar with key command F4.</li>
+<li>Add "Zoom to fit" to module context menu with key command Ctrl+F4.</li>
+<li>Add "View > Mouse wheel" setting to make mouse wheel zoom instead of scroll.</li>
+<li>Add parameter value functions <code>vtobpm()</code> and <code>bpmtov()</code>.</li>
+<li>On non-QWERTY keyboards, use QWERTY key positions for key commands instead of letters.</li>
+<li>Render 2-stop linear/radial gradients with any stop offsets and transformations in SVG.</li>
+<li>Rack Pro
+<ul>
+<li>Fix VST3 plugin forcing DAW MIDI input to channel 1.</li>
+<li>Allow VST3 plugin to receive MIDI CC, pitch bend, and channel aftertouch.</li>
+</ul></li>
+<li>Core
+<ul>
+<li>MIDI to CV: When sustain pedal is released in monophonic mode, turn off gate if no notes are held.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Don't combine SDK packages for Mac-x64 and Mac-arm64.</li>
+<li>Update to libcurl 8.10.0 and OpenSSL 3.3.2.</li>
+<li>Add <code>dsp::MidiParser</code> class.</li>
+</ul></li>
+</ul>
+
+<h3>2.5.2 (2024-05-09)</h3>
+
+<ul>
+<li>Add configurable cable color labels.</li>
+<li>When duplicating module with cables, duplicate cables connected to module's outputs as well as inputs.</li>
+<li>Allow building multi-arch x64+arm64 "Universal" Mac binary.</li>
+<li>Optimize engine's cable stepping algorithm to be as CPU-efficient as non-stackable inputs.</li>
+<li>Limit log file size to 10 MB.</li>
+<li>SDK
+<ul>
+<li>Define <code>ARCH_*</code> macros in <code>arch.hpp</code> header (included in <code>rack.hpp</code>) instead of in compiler flags.</li>
+</ul></li>
+</ul>
+
+<h3>2.5.1 (2024-04-16)</h3>
+
+<ul>
+<li>Remember the last selected cable color from the port's "New cable" menu item. When "Auto-rotate cables" is enabled, the next color in the rotation is used.</li>
+<li>Fix crash when modules such as VCV MIDI-Map bind parameters.</li>
+<li>If loaded patch contains unavailable modules, don't close Rack after user chooses to open them in VCV Library. Instead, load patch without these modules so user can download them.</li>
+<li>Add error dialog if moving Rack's user folder to new location fails.</li>
+</ul>
+
+<h3>2.5.0 (2024-04-08)</h3>
+
+<ul>
+<li>Allow stacking cables on input ports. Cable voltages are summed.</li>
+<li>Ask to view unavailable modules on the VCV Library when loading a patch.</li>
+<li>Add "View > Cable colors" menu to edit cable colors and disable auto-rotating colors.</li>
+<li>Add parameter value functions <code>gaintodb()</code> (gain factor to decibels), <code>dbtogain()</code>, <code>vtof()</code> (1V/octave voltage to frequency), and <code>ftov()</code>.</li>
+<li>Move Rack user folder to:
+<ul>
+<li>Mac: <code>~/Library/Application Support/Rack2</code></li>
+<li>Windows: <code>AppData/Local/Rack2</code></li>
+<li>Linux: <code>~/.local/share/Rack2</code></li>
+</ul></li>
+<li>Update Mac icon.</li>
+<li>If Microphone permission is blocked on Mac, show warning dialog on startup.</li>
+<li>Add <code>"verifyHttpsCerts"</code> setting to disable verifying HTTPS certificates.</li>
+<li>Rack Pro
+<ul>
+<li>Fix MIDI note velocity scale in CLAP adapter.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Don't zero output port voltages when disconnecting cables.</li>
+<li>Fix <code>ExpanderChangeEvent</code> not being dispatched when removing an adjacent module.</li>
+</ul></li>
+</ul>
+
+<h3>2.4.1 (2023-08-24)</h3>
+
+<ul>
+<li>Improve module browser search order.</li>
+<li>Fix Library menu plugin update items not being re-enabled when downloading is completed.</li>
+<li>Rack Pro
+<ul>
+<li>Fix discarded MIDI input messages for all plugin adapters.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Add <code>LightButton</code> to component library.</li>
+<li>Use SSE4.1 intrinsics in <code>simd::trunc</code>, <code>floor</code>, <code>ceil</code>, <code>round</code>, and <code>fmod</code> to improve performance.</li>
+</ul></li>
+</ul>
+
+<h3>2.4.0 (2023-08-07)</h3>
+
+<ul>
+<li>Add "View > Use dark panels if available" menu item.</li>
+<li>Show module ID in module's Info menu.</li>
+<li>Fix order of input MIDI messages having the same frame timestamp. This fixes <em>VCV MIDI to CV</em> from sometimes duplicating clock pulses when transport starts.</li>
+<li>Move plugins folder to <code>&lt;Rack user folder&gt;/plugins-&lt;OS&gt;-&lt;CPU&gt;</code>.</li>
+<li>Core
+<ul>
+<li>Add dark panels.</li>
+</ul></li>
+<li>Rack Pro
+<ul>
+<li>Add CLAP FX and Generator plugin adapters in addition to existing Instrument plugin.</li>
+<li>Fix file dialogs from sometimes loading/saving the wrong Rack plugin instance when multiple instances are running.</li>
+<li>Fix crash when using Mac VST3 and AU plugins simultaneously in a DAW.</li>
+<li>Fix crash when removing one of multiple running plugin instances in Studio One.</li>
+<li>Fix CLAP plugin discarding output MIDI messages.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Add <code>ThemedSvgPanel</code> and <code>ThemedSvgScrew</code> classes which automatically switch SVGs when dark panels are toggled.</li>
+<li>Add <code>"minRackVersion"</code> property to plugin manifest, which prevents Rack from downloading plugin if version is not compatible.</li>
+<li>Fix <code>ContextCreateEvent</code> and <code>ContextDestroyEvent</code> not defining <code>vg</code> NanoVG context.</li>
+</ul></li>
+</ul>
+
+<h3>2.3.0 (2023-03-08)</h3>
+
+<ul>
+<li>Add "View > Themes" menu with new UI themes: light and high-contrast dark.</li>
+<li>Fix file permissions resulting in error when loading certain patches.</li>
+<li>Don't select modules on click when module positions are locked.</li>
+<li>Fix small memory leak when pasting modules or selections.</li>
+<li>Fix incorrect panel scale when moving window between screens with different scale.</li>
+<li>Rack Pro
+<ul>
+<li>Don't force MIDI output message channel to 1 in VST3 adapter. Offer all 16 channels.</li>
+<li>Fix aftertouch and polyphonic pressure on all MIDI channels in VST3 and CLAP adapters.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Make <code>ParamQuantity::set/getValue()</code> set/get the Param's target value of the Engine's per-sample smoothing algorithm instead of the Param's immediate value. Add <code>ParamQuantity::set/getImmediateValue()</code>. Deprecate <code>ParamQuantity::set/getSmoothValue()</code>.</li>
+<li>Add <code>dsp::polyDirect()</code>, <code>dsp::polyHorner()</code>, and <code>dsp::polyEstrin()</code>.</li>
+<li>Rename <code>dsp::approxExp2_taylor5()</code> to <code>dsp::exp2_taylor5()</code> and improve polynomial coefficients.</li>
+<li>Add <code>color::lerp()</code>.</li>
+<li>Add <code>BooleanTrigger::processEvent()</code> and <code>SchmittTrigger::processEvent()</code>.</li>
+<li>Add <code>get()</code> helper function for <code>std::vector</code>.</li>
+</ul></li>
+</ul>
+
+<h3>2.2.3 (2023-01-25)</h3>
+
+<ul>
+<li>Place module selection nearest to mouse position when pasted and nearest to the center of the rack viewport when imported.</li>
+<li>Allow custom menu items to be appended to port's context menu.</li>
+<li>Fix ignored MIDI input messages while using small audio block sizes.</li>
+<li>Rack Pro
+<ul>
+<li>Fix hang when dialog box opens on Windows, such as after syncing library plugins.</li>
+<li>Enable Loopback MIDI driver in all plugin adapters.</li>
+<li>Fix MIDI CC output of VST3 adapter.</li>
+<li>Fix Windows installer not overwriting existing VST3 plugin bundle on Windows.</li>
+<li>Store and recall window size of VST3.</li>
+<li>Fix MIDI clock input in CLAP adapter.</li>
+<li>Make CLAP adapter a Note Effect and Audio Effect as well as an Instrument.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Make unarchiver handle zero-byte files as a special case by deleting destination files instead of overwriting them. This allows plugin packages to remove old presets by including a zero-byte file with its filename.</li>
+<li>Add <code>ModuleWidget::getModule&lt;TModule&gt;()</code> convenience method.</li>
+</ul></li>
+</ul>
+
+<h3>2.2.2 (2022-12-27)</h3>
+
+<ul>
+<li>Display Rack edition, version, OS, CPU, and plugin type in menu bar to help with troubleshooting.</li>
+<li>Add long-form command line options.</li>
+<li>Zero audio output of all channels in <code>audio::Device::processBuffer()</code> before writing, to avoid sending uninitialized values to audio device.</li>
+<li>Rack Pro
+<ul>
+<li>Fix blank plugin window on certain Linux Nvidia graphics drivers.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Don't include SIMDE headers on x64, fixing symbol conflicts when plugins include x64 intrinsic headers.</li>
+<li>Don't export symbols from libarchive, zstd, rtaudio, and rtmidi to avoid conflicts with hosts that use these libraries. Rack plugins can no longer link to these libraries.</li>
+<li>Rename plugin binary to <code>plugin-arm64.dylib</code> on Mac ARM64 so multiple plugin architectures can coexist in the same Rack user folder.</li>
+</ul></li>
+</ul>
+
+<h3>2.2.1 (2022-12-07)</h3>
+
+<ul>
+<li>Add <code>CROSS_COMPILE</code> environment variable to specify target triplet for building plugins for non-native architectures.</li>
+<li>Accept <code>aarch64</code> in target triplet as alias for ARM64.</li>
+<li>Rack Pro
+<ul>
+<li>Re-enable rtaudio and rtmidi in plugin adapters, so hardware audio/MIDI devices can be used directly by Rack.</li>
+<li>Fix VST3 not receiving MIDI CC input from DAWs.</li>
+<li>Fix VST3 not sending MIDI output to some DAWs.</li>
+<li>Fix VST3 in Bitwig resetting parameters when adding/removing modules.</li>
+<li>Fix VST3 adapter not loading on Bitwig Linux and possibly other hosts, by providing VST3 as a folder bundle instead of a single file.</li>
+<li>Fix CLAP adapter not loading on Windows, by statically linking libgcc.</li>
+</ul></li>
+</ul>
+
+<h3>2.2.0 (2022-11-23)</h3>
+
+<ul>
+<li>Add MIDI Loopback driver, allowing modules with MIDI ports to send MIDI messages to other modules.</li>
+<li>Improve fuzzy search in module browser.</li>
+<li>Allow building on ARM64 CPUs.</li>
+<li>Rename plugin packages to <code>SLUG-VERSION-OS-CPU.vcvplugin</code>.</li>
+<li>Rack Pro
+<ul>
+<li>Add VST3, Audio Unit, and CLAP plugin adapters.</li>
+<li>Add framerate setting to plugins.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Add <code>system::sleep()</code>.</li>
+<li>Make <code>random::get()</code>, <code>uniform()</code>, etc use global random state instead of thread-local.</li>
+</ul></li>
+</ul>
+
+<h3>2.1.2 (2022-07-04)</h3>
+
+<ul>
+<li>Add old module moving behavior (nearest and force-moving), available by disabling "View > Auto-squeeze algorithm".</li>
+<li>Reorganized View menu.</li>
+<li>Add version comparator so Rack only updates plugins or itself if the remote version is "greater" than the local version, as defined by the <code>string::Version</code> documentation.</li>
+<li>Add file association to Mac, so double-clicking a <code>.vcv</code> patch file in Finder opens Rack and loads the patch.</li>
+<li>Fix expanders not updating (connecting or disconnecting to adjacent modules) when cloning or removing modules.</li>
+<li>Fix VCV Audio 2 VU meter light thresholds not matching label.</li>
+</ul>
+
+<h3>2.1.1 (2022-05-21)</h3>
+
+<ul>
+<li>Allow changing cable colors with port menu.</li>
+<li>Fix placement bugs and improve behavior when moving or duplicating modules.</li>
+<li>Fix probabilistic crash when undoing a module paste action.</li>
+<li>Rack Pro
+<ul>
+<li>Fix VST2 window size not being remembered on Mac.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Make <code>SvgButton</code> dispatch <code>ActionEvent</code> only on left mouse down, instead of left/right mouse down and drag drop.</li>
+</ul></li>
+</ul>
+
+<h3>2.1.0 (2022-02-26)</h3>
+
+<ul>
+<li>Change behavior of force-moving modules so that other modules return to original position while dragging.</li>
+<li>Update to RtMidi 5.0.0.</li>
+<li>Update to RtAudio 5.2.0.</li>
+<li>Update GLFW.</li>
+<li>Fix plug graphic sometimes being incorrectly rotated.</li>
+<li>Core
+<ul>
+<li>Add "Pitch bend range" setting to MIDI to CV module.</li>
+<li>Fix MIDI to CV incorrectly setting pitch wheel and mod wheel outputs in MPE mode.</li>
+</ul></li>
+<li>Rack Pro
+<ul>
+<li>Fix crash if generating hundreds of MIDI output messages per process block in VST2.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.6 (2022-01-15)</h3>
+
+<ul>
+<li>Add "Save a copy" to File menu.</li>
+<li>Remember CPU meter state across launches.</li>
+<li>Use audio device's suggested sample rate as initial sample rate.</li>
+<li>Add more logging of initialization/destruction of subsystems and module instantiation.</li>
+<li>Make MIDI input queue thread-safe, fixing probabilistic crash when processing MIDI input.</li>
+<li>Rack Pro
+<ul>
+<li>Generate MIDI Start message in DAWs like Cubase that pre-roll transport.</li>
+<li>Generate MIDI Song Position Pointer messages when DAW is playing.</li>
+<li>Fix VST2 input/output channel labels being truncated in Ableton Live.</li>
+<li>Improve VST2 audio performance by avoiding unnecessary copying of buffers.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.5 (2022-01-01)</h3>
+
+<ul>
+<li>Swap order of parameter name and module name in MIDI-Map.</li>
+<li>Parse all note names from c0 to b9 and accidentals like c# and eb in parameter entry field.</li>
+<li>Tweak framebuffer render-skipping algorithm to always render at least 1 framebuffer after the frame deadline, to prevent framebuffers from never being rendered.</li>
+<li>Set audio device default sample rate to 44100, and block size to 256 except DirectSound to 1024.</li>
+<li>Fix file dialog truncating Unicode filenames on Mac.</li>
+</ul>
+
+<h3>2.0.4 (2021-12-18)</h3>
+
+<ul>
+<li>Fix hang when initializing Audio module.</li>
+<li>Fix hidden window after closing while minimized and reopening.</li>
+<li>Move Import Selection menu item to File menu bar.</li>
+<li>Switch from GTK3 to <code>zenity</code> for opening dialogs on Linux.</li>
+<li>Implement prompt dialog on Windows.</li>
+<li>Make Windows installer add Rack to list of CFA allowed apps, allowing Rack to write to "My Documents" folder if Controlled Folder Access is enabled.</li>
+<li>Rack Pro
+<ul>
+<li>Improve stability of DAW MIDI clock.</li>
+<li>Fix graphics glitch when duplicating module with Ctrl+D in Ableton Live.</li>
+<li>Re-enable patch load error dialog.</li>
+</ul></li>
+<li>SDK
+<ul>
+<li>Compile with <code>-fno-omit-frame-pointer</code>.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.3b (2021-12-09)</h3>
+
+<ul>
+<li>Rack Pro
+<ul>
+<li>Use separate template patch when running as a plugin.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.3 (2021-12-09)</h3>
+
+<ul>
+<li>Fix MIDI-Map not accepting MIDI CC.</li>
+<li>Fix order of Audio-16 outputs 13/14 and 15/16.</li>
+<li>Clear patch before removing autosave dir when loading patch. This fixes inability to load patches on Windows when modules hold file handles to patch storage.</li>
+<li>Fix crash when patch attempts to add a cable that connects to a valid Port but an inexistent PortWidget (e.g. if a module defines a Port but omits the PortWidget).</li>
+<li>Upgrade from ustar to pax tar patch format. Don't store actual uid/gid, just set to 0.</li>
+<li>Rack Pro
+<ul>
+<li>Add external audio/MIDI drivers in plugin, except ASIO on Windows.</li>
+<li>Show machine ID in splash window for offline activation.</li>
+<li>Prevent "Reserved" plugin parameter from being changed when moving module parameters.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.2 (2021-12-06)</h3>
+
+<ul>
+<li>Turn off lights if module is bypassed.</li>
+<li>Fix Font and Image not loading UTF-8 filenames on Windows.</li>
+<li>Fix plugins not loading if their fallback alias exists.</li>
+<li>Fix crash when sometimes unsetting audio interface on Mac.</li>
+<li>Rack Pro
+<ul>
+<li>Save/restore plugin window size in patch.</li>
+<li>Fix crash on scan in Renoise.</li>
+</ul></li>
+</ul>
+
+<h3>2.0.1 (2021-12-02)</h3>
+
+<ul>
+<li>Fix network connection timeout.</li>
+<li>Flush log file when logging to avoid truncated logs.</li>
+</ul>
+
+<h3>2.0.0 (2021-11-30)</h3>
+
+<ul>
+<li>Redesign Module Browser with compact layout, adjustable zoom levels, sorting options, intelligent searching, and multiple tag selection.</li>
+<li>Redesign component graphics and Core panels by <a href="https://www.pyer.be/">Pyer</a>.</li>
+<li>Add port tooltips with name, voltage, and list of connected ports.</li>
+<li>Add port context menu with ability to create cables with a particular color, drag any cable from the stack, or delete the top cable.</li>
+<li>Evaluate mathematical expressions (such as <code>1+2*3</code>) in parameter context menu fields.</li>
+<li>Add multiple module selection by highlighting a rectangle or Shift-clicking on a module panel.</li>
+<li>Add importing/exporting module selections to new <code>.vcvs</code> file format.</li>
+<li>Add module whitelist to Module Browser which synchronizes individual modules chosen in the VCV Library.</li>
+<li>Add favorite modules filter to Module Browser.</li>
+<li>Restructure engine to no longer use an "engine thread".
+<ul>
+<li>Improve engine performance and latency by no longer requiring thread synchronization between the engine thread and audio thread. The engine now runs directly on the audio thread.</li>
+<li>Add support for multiple simultaneous audio devices.</li>
+<li>Add "Master module" context menu item to VCV Audio modules to select which audio device clocks the engine.</li>
+<li>Allow other modules to be the primary module, such as VCV Recorder for rendering audio faster than real-time.</li>
+<li>Remove "Real-time priority" menu item, since the thread priority is now managed elsewhere (RtAudio, etc).</li>
+<li>Remove engine pausing as it no longer makes sense with the new engine architecture.</li>
+</ul></li>
+<li>Replace module disabling with bypassing, which directly routes certain inputs to outputs if specified by the plugin.</li>
+<li>Duplicate cables patched to inputs when a module is duplicated.</li>
+<li>Add module tags to module context menu.</li>
+<li>Add module manual URL (if plugin developer supplies it) to module context menu item.</li>
+<li>Add quick access to user module patches from <code>&lt;Rack user dir&gt;/presets/&lt;plugin slug&gt;/&lt;module slug&gt;</code> to module context menu. Supports subdirectories.</li>
+<li>Add infinity and NaN protection to cables, so they won't propagate non-finite values from badly behaving modules.</li>
+<li>Add basic headless support with the <code>-h</code> flag.</li>
+<li>Add multiple parameter dragging modes: scaled linear, absolute rotary, and relative rotary.</li>
+<li>Add "knobLinearSensitivity" property to settings.</li>
+<li>Add timestamps to MIDI messages.</li>
+<li>Allow sending and receiving SysEx messages through MIDI drivers.</li>
+<li>Allow scrolling with Alt+click and drag.</li>
+<li>Add "File > Open recent" menu item for opening recent patches.</li>
+<li>Add "Preset > Save template" to module context menu which saves the default module preset to load when a new instance is added to the rack.</li>
+<li>Break Rack executable into libRack shared library and lightweight standalone Rack executable.</li>
+<li>Add support for 1/2x and 1/4x low-fidelity sample rates to engine and "Engine > Sample rates" menu.</li>
+<li>Add Escape key command for existing fullscreen, in case F11 doesn't work.</li>
+<li>Copy cable color when cloning cables with Ctrl+click.</li>
+<li>Fix key commands on AZERTY, Dvorak, and all other keyboard layouts.</li>
+<li>Add Mouse device to Computer keyboard/mouse MIDI driver.</li>
+<li>Make scrollbar mouse interaction similar to modern OS behavior.</li>
+<li>Re-render framebuffers when subpixel offset changes, fixing bug that makes ports and knobs appear slightly offset at certain zoom levels.</li>
+<li>Use new <code>.vcv</code> patch format, an archive (POSIX tar compressed with Zstandard) of a <code>patch.json</code> file, module patch assets, and potentially other future files.</li>
+<li>Use randomly-generated 53-bit IDs to identify modules and cables in the patch.</li>
+<li>Use a fuzzy search algorithm for searching modules in the Module Browser.</li>
+<li>Add tips window which appears when Rack launches or when choosing "Help > Tips".</li>
+<li>Check for Library updates every few seconds to avoid needing to restart Rack to check for updates.</li>
+<li>When clicking on a module in the Module Browser and immediately releasing, place the module in the last cursor position in the rack, rather than the current cursor position.</li>
+<li>When clicking and dragging a module from the Module Browser, fix the mouse handle offset to the center of the module.</li>
+<li>Allow darkening rack brightness.</li>
+<li>Draw spotlight near cursor when rack brightness is lowered.</li>
+<li>Improve light rendering with a more physical blending algorithm.</li>
+<li>Add engine CPU meter and framerate meter to menu bar.</li>
+<li>Allow zooming rack with extra mouse buttons 4 and 5.</li>
+<li>Add <code>"pixelRatio"</code> to settings for forcing the UI pixel scale.</li>
+<li>If Ctrl+clicking on any menu item, the menu stays open (except for some menu items like "Delete Module").</li>
+<li>Add Ctrl+F1 key command when cursor is hovering a module to open its user manual.</li>
+<li>Redesign CPU meter with percentage history graph.</li>
+<li>Add PulseAudio driver on Linux.</li>
+<li>Distribute .pkg installer on Mac.</li>
+<li><p>Check for VCV Library updates when Library menu is opened, rather than at time intervals.</p></li>
+<li><p>Core</p>
+
+<ul>
+<li>Add Audio-2 module with stereo input/output, a level knob, and VU meters.</li>
+<li>Add DC blocker setting to Audio modules. On Audio-2, enable it by default.</li>
+<li>Add MPE mode to MIDI-CC and MIDI-Gate.</li>
+<li>Add mode to MIDI-CC to process 14-bit MIDI CC via MSB/LSB.</li>
+<li>Use MIDI timestamps in MIDI-CV, MIDI-CC, MIDI-Gate, and MIDI-Map to improve overall timing and drastically reduce clock jitter.</li>
+<li>Add red clip lights to VCV Audio-8/16 when signal reaches beyond ±10V.</li>
+<li>Reset notes in MIDI-CV and MIDI-Gate if an "all notes off" MIDI message is received.</li>
+<li>Allow disabling smoothing for MIDI-CV (pitch and mod wheel), MIDI-CC, and MIDI-Map.</li>
+<li>Add several module presets for many Core modules.</li>
+</ul></li>
+<li><p>SDK</p>
+
+<ul>
+<li>Add setters/getters for nearly every instance variable in Rack's API. Use these for higher likelihood of stability.</li>
+<li>Compile Rack and plugins with <code>-march=nehalem</code>, enabling (and requiring) up to SSE4.2 and POPCNT instruction sets.</li>
+<li>Add <code>Module::configInput()</code> and <code>Module::configOutput()</code> for adding names to ports.</li>
+<li>Replace <code>ParamWidget::paramQuantity</code> with <code>ParamWidget::getParamQuantity()</code>.</li>
+<li>Add <code>.modules[].manualUrl</code> to plugin manifest schema.</li>
+<li>Add <code>appendAudioMenu()</code> and <code>appendMidiMenu()</code> so plugin developers can develop custom audio/MIDI interfaces without adding an <code>AudioWidget/MidiWidget</code> to their panel.</li>
+<li>Make <code>Module::toJson()</code> and <code>fromJson()</code> virtual.</li>
+<li>Add <code>Module::paramsToJson()</code> and <code>paramsFromJson()</code> virtual methods.</li>
+<li>Add <code>SwitchQuantity</code> and a helper method <code>Module::configSwitch()</code> for displaying named values in the parameter context menu. Also add <code>Module::configButton()</code> recommended for momentary switches with no value labels.</li>
+<li>Overhaul Engine threading model to allow as many Engine methods to be called simultaneously as possible, while ensuring that Module events are mutually exclusive to module processing.</li>
+<li>Add <code>Engine::getNumModules()</code> and <code>Engine::getModuleIds()</code>.</li>
+<li>Add <code>event::KeyBase::keyName</code>. Plugins should use this instead of <code>key</code> for alphanumeric keys in order to support all keyboard layouts.</li>
+<li>Improve thread safety of <code>dsp::RingBuffer</code>.</li>
+<li>Add several convenient filesystem routines to <code>system::</code>.</li>
+<li>Add <code>system::getTime()</code> and <code>getUnixTime()</code>.</li>
+<li>Add <code>system::readFile()</code> and <code>writeFile()</code>.</li>
+<li>Move all <code>string::</code> functions dealing with filesystem paths to <code>system::</code>.</li>
+<li>Change type of <code>Module::id</code> and <code>Cable::id</code> from <code>int</code> to <code>int64_t</code>.</li>
+<li>Move event classes to inside <code>widget::Widget</code> class.</li>
+<li>Deprecate <code>Window::loadSvg()</code>. Un-deprecate <code>Svg::load()</code>.</li>
+<li><code>Font</code> and <code>Image</code> can no longer be stored across UI frames. Load them with <code>APP-&gt;window-&gt;loadFont()</code> and <code>loadImage()</code> each <code>draw()</code> method.</li>
+<li>Add <code>Widget::hasChild()</code>, <code>addChildBottom()</code>, <code>addChildBelow()</code>, <code>addChildAbove()</code>, and <code>drawChild()</code>.</li>
+<li>Add <code>Module::createPatchStorageDirectory()</code> and <code>getPatchStorageDirectory()</code>.</li>
+<li>Add <code>createMenuLabel()</code>, <code>createMenuItem()</code>, <code>createCheckMenuItem()</code>, <code>createBoolMenuItem()</code>, <code>createBoolPtrMenuItem()</code>, <code>createSubmenuItem()</code>, <code>createIndexSubmenuItem()</code>, and <code>createIndexPtrSubmenuItem()</code> to helpers.</li>
+<li>Add <code>Module::onReset()</code> and <code>onRandomize()</code>. Overrides default param resetting and randomization behavior if overridden, unless super methods are called.</li>
+<li>Add <code>Module::SaveEvent</code>.</li>
+<li>Add operator overloads for <code>Vec</code>.</li>
+<li>Add <code>string::join()</code>, <code>split()</code>, <code>formatTime()</code>, and <code>formatTimeISO()</code>.</li>
+<li>Add <code>random::Xoroshiro128Plus</code> which can be used like C++ <code>&lt;random&gt;</code> classes.</li>
+<li>Add <code>Port::getVoltageRMS()</code>.</li>
+<li>Add <code>Widget::drawLayer()</code> for handling multiple draw passes.</li>
+<li>Add on/off threshold values to <code>dsp::SchmittTrigger</code>.</li>
+<li>Add <code>dsp::convert()</code> template functions for converting audio between normalized floats and integers.</li>
+<li>Add <code>bool app::SvgSwitch::latch</code> setting for latching button switches.</li>
+<li>Dispatch <code>Module::SampleRateChange</code> event when <code>Module</code> is added to engine.</li>
+</ul></li>
+</ul>
+
+<h3>1.1.6 (2019-11-04)</h3>
+
+<ul>
+<li>Add ability for plugins to use LuaJIT on Mac.</li>
+<li>Fix normal random number generator possibly returning -infinity.</li>
+<li>Core
+<ul>
+<li>MIDI-Map: Don't move param until the first MIDI CC command is sent.</li>
+</ul></li>
+<li>API
+<ul>
+<li>Remove support for namespaced <code>rack::APP</code>, <code>rack::DEBUG</code>, etc macros. Use namespace-less <code>APP</code>, <code>DEBUG</code>, etc instead.</li>
+<li>Add <code>dsp::IIRFilter</code>.</li>
+</ul></li>
+</ul>
+
+<h3>1.1.5 (2019-09-29)</h3>
+
+<ul>
+<li>Swap order of tags and brands in Module Browser.</li>
+<li>Add View > Frame rate menu bar item.</li>
+<li>Hide menu and scrollbars when fullscreen.</li>
+<li>Add key command (F3) for engine CPU meter.</li>
+<li>Add numpad key commands.</li>
+<li>Automatically unzip update on Mac.</li>
+<li>Stop worker threads when engine is paused to save CPU.</li>
+<li>Core
+<ul>
+<li>Disable smoothing for MIDI CC buttons in MIDI-Map.</li>
+<li>Fix sustain pedal release bug when using polyphonic mode in MIDI-CV.</li>
+</ul></li>
+<li>API
+<ul>
+<li>Add libsamplerate library.</li>
+</ul></li>
+</ul>
+
+<h3>1.1.4 (2019-08-22)</h3>
+
+<ul>
+<li>Fix parameter smoothing of MIDI-Map.</li>
+<li>Sort modules within plugin in the Module Browser according to plugin rather than alphabetically.</li>
+<li>Fix bug where knobs sometimes jump while dragging.</li>
+<li>Reimplement CPU meter to measure thread runtime, not real time.</li>
+<li>Fix crashes when deleting/duplicating modules while dragging modules/cables in certain cases.</li>
+<li>API
+<ul>
+<li>Add <code>dsp::BiquadFilter</code>.</li>
+<li>Add <code>dsp/approx.hpp</code> with approximate math functions.</li>
+<li>Add <code>simd::tan()</code>, <code>atan()</code>, and <code>atan2()</code>.</li>
+<li>Add <code>string::toBase64()</code> and <code>fromBase64()</code>.</li>
+</ul></li>
+</ul>
+
+<h3>1.1.3 (2019-07-23)</h3>
+
+<ul>
+<li>Include root certificate bundle for libcurl on all OS's.</li>
+<li>Revert to OpenSSL from Schannel on Windows.</li>
+<li>Bundle unsigned Fundamental package on Mac.</li>
+</ul>
+
+<h3>1.1.2 (2019-07-20)</h3>
+
+<ul>
+<li>Add app notarization on Mac, which removes the "Apple cannot check for malicious software" message on launch.</li>
+<li>Write stack trace to log.txt and display dialog box when Rack crashes.</li>
+<li>Re-enable JACK MIDI driver on Linux.</li>
+<li>Fix scroll speed for mice and trackpads on Mac.</li>
+<li>Fix undo history bug when dragging patch file to the Rack window.</li>
+<li>Fix crash when pasting presets to an empty rack space with Ctrl+V.</li>
+<li>Fix module expanders being assigned incorrectly when loading presets.</li>
+<li>Add check for duplicate port IDs for modules.</li>
+</ul>
+
+<h3>1.1.1 (2019-07-01)</h3>
+
+<ul>
+<li>Add auto-updating on Windows when Help > Update VCV Rack is clicked.</li>
+<li>Fix extension filters in open/save dialog box on Windows.</li>
+<li>Fix expanders not attaching when force-dragging modules.</li>
+</ul>
+
+<h3>1.1.0 (2019-06-27)</h3>
+
+<ul>
+<li>Request microphone access on Mac to prevent Mac 10.14+ from blocking audio input.</li>
+<li>Clear filters in Module Browser when backspace is pressed while the search field is empty.</li>
+<li>Add Ctrl+0 key command to set zoom to 100%.</li>
+<li>Emulate middle-click with Ctrl+shift-click on Mac.</li>
+<li>Fix MIDI receiving in Bridge MIDI driver.</li>
+<li>Fix opening/saving UTF-8 filenames on Windows.</li>
+<li>Fix bug where cable ID's were not being set in .vcv patches.</li>
+<li>Plugin API
+<ul>
+<li>Add <code>string::absolutePath()</code>.</li>
+<li>Use namespace for Core plugin to avoid name clashes.</li>
+</ul></li>
+</ul>
+
+<h3>1.0.0 (2019-06-19)</h3>
+
+<ul>
+<li>Add polyphonic cables.</li>
+<li>Add multithreading to engine.</li>
+<li>Add undo/redo history.</li>
+<li>Add module expander support.</li>
+<li>Add parameter labels, units, and descriptions.</li>
+<li>Add parameter tooltips for quickly viewing parameter values.</li>
+<li>Add parameter context menu for entering numerical values, unmapping, etc.</li>
+<li>Change parameter initialization to double-click.</li>
+<li>Add ability to Ctrl+click on an input port to clone the existing cable.</li>
+<li>Add module "force" dragging when holding Ctrl.</li>
+<li>Add ability to disable modules with a context menu item and key command Ctrl+E.</li>
+<li>Add sample rates up to 768,000 Hz (16 x 48,000 Hz).</li>
+<li>Overhaul Module Browser with visual previews of modules.</li>
+<li>Add plugin info sub-menu to module context menu with links to manual, website, source code, etc.</li>
+<li>Add factory presets to module context menu if plugin supplies a folder of presets.</li>
+<li>Add default template patch.</li>
+<li>Add menu item to save the current patch as the template.</li>
+<li>Add "frameRateLimit" and "frameRateSync" for setting maximum screen refresh rate and to toggle vertical sync.</li>
+<li>Add "autosavePeriod" for setting the frequency of autosaves in seconds.</li>
+<li>Add textual menu bar, rearranged menu items, removed icons.</li>
+<li>Make CPU timer display microseconds and percentage instead of millisamples.</li>
+<li>Add engine real-time priority setting.</li>
+<li>Make rack infinite in all four directions.</li>
+<li>Add bus board graphic to rack.</li>
+<li>Add key command Ctrl+<code>-</code> and Ctrl+<code>=</code>, or Ctrl+scroll, for zooming the rack.</li>
+<li>Fix draw order of cable plugs and wires.</li>
+<li>Make Gamepad MIDI driver generate MIDI CC instead of MIDI notes for buttons.</li>
+<li>Add Numpad keyboard MIDI device.</li>
+<li>Fix Unicode user directories on Windows.</li>
+<li>Add ability to change cable colors in <code>settings.json</code>.</li>
+<li>Add <code>-p X</code> flag for dumping a screenshot of each available module.</li>
+<li>Allow user to see changelogs of plugins before updating their plugin library.</li>
+<li>Allow user to update individual plugins.</li>
+<li>Core
+<ul>
+<li>Add Audio-16 with 16/16 inputs/outputs.</li>
+<li>Add CV-MIDI, CV-CC, and CV-Gate for sending MIDI to external devices.</li>
+<li>Add MIDI-Map for mapping MIDI CC parameters directly to Rack parameters.</li>
+<li>Add polyphony to MIDI-CV.</li>
+<li>Add MPE mode to MIDI-CV.</li>
+<li>Add "Panic" button to all MIDI modules to reset performance state.</li>
+</ul></li>
+<li>Plugin API
+<ul>
+<li>Add <a href="helper.py"><code>helper.py</code></a> for creating and manipulating plugins with the command-line.</li>
+<li>Add <a href="include/dsp/simd.hpp"><code>simd.hpp</code></a> for generically handling arithmetic and math functions for vectors of floats, accelerated with SSE.</li>
+<li>Add <code>dsp::VuMeter2</code>.</li>
+<li>Add <code>dsp::Timer</code> and <code>dsp::Counter</code>.</li>
+<li>Overhaul event system with many new events.</li>
+<li>etc. See more at https://vcvrack.com/manual/Migrate1.html.</li>
+</ul></li>
+<li>Licenses
+<ul>
+<li>Relicense Rack to GPLv3 with the VCV Rack Non-Commercial Plugin License Exception and a commercial licensing option.</li>
+<li>Collect all license statements into new <a href="LICENSE.md">LICENSE.md</a> file.</li>
+<li>License Core panel graphics under CC BY-NC-ND 4.0.</li>
+</ul></li>
+</ul>
+
+<h3>0.6.2 (2018-07-13)</h3>
+
+<ul>
+<li>Add module presets.</li>
+<li>Add <a href="https://vcvrack.com/manual/Installing.html#command-line-usage">command line arguments</a> for setting Rack directories.</li>
+<li>Improve UI/engine communication stability.</li>
+<li><a href="https://vcvrack.com/manual/Bridge.html">VCV Bridge</a> 0.6.2
+<ul>
+<li>Add VST FX plugin.</li>
+</ul></li>
+</ul>
+
+<h3>0.6.1 (2018-06-17)</h3>
+
+<ul>
+<li>Add gamepad MIDI driver.</li>
+<li>Add computer keyboard MIDI driver.</li>
+<li>Add JACK support on Linux.</li>
+<li>Add velocity mode to MIDI-Trig.</li>
+<li>Add MIDI multiplexing so multiple MIDI modules can use the same MIDI device on Windows.</li>
+<li>Make Module Browser layout more compact.</li>
+<li>Add power meter.</li>
+<li>Add icons to toolbar.</li>
+<li><a href="https://vcvrack.com/manual/Bridge.html">VCV Bridge</a> 0.6.1
+<ul>
+<li>Replace VST effect plugin with VST instrument plugin with audio inputs.</li>
+<li>Add MIDI support.</li>
+<li>Add DAW transport and clock.</li>
+</ul></li>
+</ul>
+
+<h3>0.6.0 (2018-03-29)</h3>
+
+<ul>
+<li>Release <a href="https://vcvrack.com/manual/Bridge.html"><em>VCV Bridge</em></a> for interfacing Rack with your DAW.
+<ul>
+<li>VST/AU effect plugins (Mac and 32/64-bit Windows) for using Rack as a send/return on a DAW track.</li>
+<li>Enables future VSTi/AU instrument plugins with MIDI and DAW clock transport to be added in a later Rack 0.6.* update.</li>
+</ul></li>
+<li>Updated <a href="https://vcvrack.com/plugins.html"><em>Plugin Manager</em></a> to handle open-source plugins.
+<ul>
+<li>Potentially all plugins can be added with help from the <a href="https://github.com/VCVRack/community/issues/248">VCV Community</a>.</li>
+</ul></li>
+<li>New <em>Module Browser</em> for adding modules to the rack.
+<ul>
+<li>Launch by right-clicking on the rack or pressing <enter>.</li>
+<li>Add "favorite" modules by clicking on the star button.</li>
+<li>Navigate modules with arrow keys or mouse.</li>
+</ul></li>
+<li>Redesign <a href="https://vcvrack.com/manual/Core.html">Core</a> modules.
+<ul>
+<li>Access to audio channels beyond the first 8 inputs/outputs.</li>
+<li>Improve AUDIO stability.</li>
+<li>Add retrigger output to MIDI-1.</li>
+<li>Merged MIDI clock module with MIDI-1.</li>
+<li>Fix MIDI-4 sustain pedal in polyphonic modes.</li>
+</ul></li>
+<li>Improve sample rate conversion performance, is disabled entirely when not needed.</li>
+<li>Patch cable colors are saved to patch files.</li>
+<li>Add highlighting for active patch cables when hovering mouse over port.</li>
+<li>Add shadows to knobs and ports.</li>
+<li>Add File > "Disconnect cables".</li>
+<li>Release <a href="https://github.com/VCVRack/Rack/issues/258#issuecomment-376293898">Rack SDK</a> for compiling plugins without compiling Rack.</li>
+</ul>
+
+<h3>0.5.1 (2017-12-19)</h3>
+
+<ul>
+<li>Add Plugin Manager support.</li>
+<li>Fix metadata panel in the Add Module window.</li>
+</ul>
+
+<h3>0.5.0 (2017-11-21)</h3>
+
+<ul>
+<li>Add zoom scaling from 25% to 200%.</li>
+<li>Automatically scroll when dragging cables to the edge of the screen.</li>
+<li>Add Quad MIDI-to-CV Interface, CC-to-CV, Clock-to-CV, and Trigger-to-CV MIDI interfaces.</li>
+<li>Improve support for ASIO, WASAPI, DirectSound, Core Audio, and ALSA audio drivers.</li>
+<li>New module browser with search and tags.</li>
+<li>Enhanced LED emulation in graphics engine.</li>
+<li>File > New attempts to load "template.vcv" in the "Documents/Rack" folder if it exists.</li>
+</ul>
+
+<h3>0.4.0 (2017-10-13)</h3>
+
+<ul>
+<li>Cables can now stack on output ports.</li>
+<li>Add sub-menus for each plugin, includes optional plugin metadata like URLs.</li>
+<li>Add MIDI CC-to-CV Interface, updated MIDI-to-CV Interface.</li>
+<li>Add new scrolling methods: middle-click-and-drag, shift-scroll, and arrow keys.</li>
+<li>Add engine pausing in sample rate menu.</li>
+<li>Add resizable blank to Core.</li>
+<li>Add LEDs on plugs.</li>
+<li>Support for AMD Phenom II processors.</li>
+<li>Use self-contained Mac app bundle, no need for a Rack folder.</li>
+</ul>
+
+<h3>0.3.2 (2017-09-25)</h3>
+
+<ul>
+<li>Add key commands.</li>
+<li>Fix "invisible knobs/ports" rendering bug for ~2010 Macs.</li>
+<li>Add "allowCursorLock" to settings.json (set to "false" for touch screen support).</li>
+<li>Fix 100% CPU issue when no audio device is selected.</li>
+<li>Add vector scaling panels.</li>
+</ul>
+
+<h3>0.3.1 (2017-09-13)</h3>
+
+<ul>
+<li>Fix Windows open dialog current working directory graphics problem.</li>
+<li>Ctrl+C/Ctrl+V to copy/paste from text and password fields.</li>
+<li>Automatically remember settings and login token between launches.</li>
+<li>Remove .zip after downloading and extracting plugin.</li>
+<li>Ctrl+click to right click on Mac.</li>
+<li>Fix menu "flicker" when menu cannot fit in window.</li>
+<li>tweaks to Fundamental and Audible Instruments plugins.</li>
+</ul>
+
+<h3>0.3.0 (2017-09-10)</h3>
+
+<ul>
+<li>Knobcon public Beta release.</li>
+</ul>
